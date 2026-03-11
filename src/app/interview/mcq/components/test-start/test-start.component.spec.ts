@@ -1,0 +1,23 @@
+import { ComponentFixture, TestBed } from '@angular/core/testing';
+
+import { TestStartComponent } from './test-start.component';
+
+describe('TestStartComponent', () => {
+  let component: TestStartComponent;
+  let fixture: ComponentFixture<TestStartComponent>;
+
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [TestStartComponent]
+    })
+    .compileComponents();
+    
+    fixture = TestBed.createComponent(TestStartComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('should create', () => {
+    expect(component).toBeTruthy();
+  });
+});

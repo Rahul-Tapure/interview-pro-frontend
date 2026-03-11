@@ -1,0 +1,248 @@
+<!-- edit-test.html -->
+
+<!-- Background -->
+<div class="edit-bg">
+  <div class="grid-overlay"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+</div>
+
+<!-- Loading State -->
+<div class="loading-wrapper" *ngIf="loading">
+  <div class="loading-card">
+    <div class="loading-dots">
+      <div class="ldot"></div>
+      <div class="ldot"></div>
+      <div class="ldot"></div>
+    </div>
+    <p class="loading-text">Loading test for editing...</p>
+  </div>
+</div>
+
+<ng-container *ngIf="test$ | async as test">
+  <div class="edit-wrapper" *ngIf="!loading">
+
+    <!-- ── Page Header ── -->
+    <div class="page-header">
+      <div>
+        <div class="page-eyebrow">Creator Tools</div>
+        <h1 class="page-title">Edit Private Test</h1>
+        <p class="page-sub">Modify questions, options, and test settings</p>
+      </div>
+      <div class="header-actions">
+        <button
+          class="btn-save"
+          (click)="saveChanges()"
+          [disabled]="saving"
+          [class.btn-saving]="saving">
+          <span class="btn-spinner" *ngIf="saving"></span>
+          <svg *ngIf="!saving" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+            <polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
+          </svg>
+          {{ saving ? 'Saving...' : 'Save Changes' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Test Meta Card ── -->
+    <div class="meta-card">
+      <div class="meta-card-header">
+        <div class="meta-icon">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+        </div>
+        <h2 class="meta-title">Test Settings</h2>
+      </div>
+
+      <div class="meta-fields">
+        <!-- Title -->
+        <div class="field-group">
+          <label class="field-label">Test Title</label>
+          <div class="input-wrapper">
+            <span class="input-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/>
+                <line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/>
+                <line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
+              </svg>
+            </span>
+            <input type="text" [(ngModel)]="test.title" class="field-input" placeholder="Enter test title..."/>
+          </div>
+        </div>
+
+        <!-- Duration -->
+        <div class="field-group field-group-sm">
+          <label class="field-label">Duration (Minutes)</label>
+          <div class="input-wrapper">
+            <span class="input-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </span>
+            <input type="number" [(ngModel)]="test.durationMinutes" class="field-input" placeholder="60" min="1"/>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Questions ── -->
+    <div class="questions-section">
+
+      <div class="section-label-row">
+        <span class="section-label">Questions ({{ test.questions?.length ?? 0 }})</span>
+        <button class="btn-add-question" (click)="addQuestion()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Add Question
+        </button>
+      </div>
+
+      <!-- Question Card -->
+      <div
+        class="question-card"
+        *ngFor="let q of test.questions; let i = index"
+        [style]="'--i:' + i">
+
+        <!-- Question Header -->
+        <div class="q-header">
+          <div class="q-num-badge">Q{{ i + 1 }}</div>
+          <div class="q-header-actions">
+            <!-- Difficulty -->
+            <div class="diff-wrapper">
+              <select
+                [(ngModel)]="q.difficulty"
+                class="diff-select"
+                [disabled]="isAttempted && q.questionId"
+                [class.diff-easy]="q.difficulty === 'EASY'"
+                [class.diff-medium]="q.difficulty === 'MEDIUM'"
+                [class.diff-hard]="q.difficulty === 'HARD'">
+                <option value="EASY">🟢 Easy</option>
+                <option value="MEDIUM">🟡 Medium</option>
+                <option value="HARD">🔴 Hard</option>
+              </select>
+            </div>
+            <button class="btn-delete-q" (click)="deleteQuestion(i)">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"/>
+                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                <path d="M10 11v6"/><path d="M14 11v6"/>
+              </svg>
+              Delete
+            </button>
+          </div>
+        </div>
+
+        <!-- Question Text -->
+        <div class="q-text-wrapper" [class.q-readonly]="isAttempted && q.questionId">
+          <textarea
+            [(ngModel)]="q.questionText"
+            rows="3"
+            placeholder="Enter question text..."
+            class="q-textarea"
+            [readonly]="isAttempted && q.questionId"
+          ></textarea>
+          <span class="readonly-badge" *ngIf="isAttempted && q.questionId">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Locked
+          </span>
+        </div>
+
+        <!-- Options -->
+        <div class="options-section">
+          <div class="options-label">Answer Options — select the correct one</div>
+
+          <div
+            class="option-row"
+            *ngFor="let opt of q.options; let j = index"
+            [class.option-selected]="opt.isCorrect">
+
+            <!-- Radio -->
+            <label class="radio-wrap" [title]="'Mark as correct answer'">
+              <input
+                type="radio"
+                [name]="'correct' + i"
+                [checked]="opt.isCorrect"
+                [disabled]="isAttempted && opt.optionId"
+                (change)="markCorrect(q, opt)"
+                class="radio-input"
+              />
+              <span class="radio-custom"></span>
+            </label>
+
+            <!-- Option Letter -->
+            <span class="opt-letter" [class.letter-correct]="opt.isCorrect">
+              {{ optionLabel(j) }}
+            </span>
+
+            <!-- Option Text Input -->
+            <input
+              [(ngModel)]="opt.optionText"
+              placeholder="Option text..."
+              class="opt-input"
+              [class.opt-input-correct]="opt.isCorrect"
+              [readonly]="isAttempted && opt.optionId"
+            />
+
+            <!-- Correct tick -->
+            <span class="correct-tick" *ngIf="opt.isCorrect">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+
+            <!-- Delete Option -->
+            <button
+              class="btn-del-opt"
+              (click)="deleteOption(q, j)"
+              title="Delete option">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Add Option -->
+          <button
+            *ngIf="!isAttempted || !q.questionId"
+            class="btn-add-opt"
+            (click)="addOption(q)">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            Add Option
+          </button>
+        </div>
+
+      </div>
+
+      <!-- Empty questions state -->
+      <div class="no-questions" *ngIf="test.questions?.length === 0">
+        <span>📝</span>
+        <p>No questions yet. Add your first question above.</p>
+      </div>
+
+    </div>
+
+    <!-- ── Bottom Save ── -->
+    <div class="bottom-bar">
+      <span class="bottom-info">
+        {{ test.questions?.length ?? 0 }} question{{ test.questions?.length !== 1 ? 's' : '' }} · {{ test.durationMinutes }} mins
+      </span>
+      <button
+        class="btn-save"
+        (click)="saveChanges()"
+        [disabled]="saving"
+        [class.btn-saving]="saving">
+        <span class="btn-spinner" *ngIf="saving"></span>
+        <svg *ngIf="!saving" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+          <polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
+        </svg>
+        {{ saving ? 'Saving...' : 'Save Test Changes' }}
+      </button>
+    </div>
+
+  </div>
+</ng-container>

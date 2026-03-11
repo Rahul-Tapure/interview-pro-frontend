@@ -1,0 +1,177 @@
+<!-- test-create.component.html -->
+
+<!-- Background -->
+<div class="create-bg">
+  <div class="grid-overlay"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+</div>
+
+<div class="create-wrapper">
+
+  <!-- ── Page Header ── -->
+  <div class="page-header">
+    <div class="page-eyebrow">Creator Tools</div>
+    <h1 class="page-title">Create New Test</h1>
+    <p class="page-sub">Set up your test details and select a type to get started</p>
+  </div>
+
+  <!-- ── Form Card ── -->
+  <div class="form-card">
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate class="create-form">
+
+      <!-- ── Test Type Cards ── -->
+      <div class="field-group">
+        <label class="field-label">Test Type</label>
+        <div class="type-cards">
+
+          <label
+            class="type-card"
+            *ngFor="let t of testTypes"
+            [class.type-selected]="f('testType')?.value === t.value"
+            (click)="form.get('testType')?.setValue(t.value)">
+            <input type="radio" formControlName="testType" [value]="t.value" class="type-radio"/>
+            <span class="type-emoji">{{ t.icon }}</span>
+            <span class="type-name">{{ t.label }}</span>
+            <span class="type-desc">{{ t.desc }}</span>
+            <span class="type-check" *ngIf="f('testType')?.value === t.value">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+          </label>
+
+        </div>
+        <div class="field-error" *ngIf="f('testType')?.touched && f('testType')?.invalid">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Please select a test type
+        </div>
+      </div>
+
+      <!-- ── Two Col: Title + Description ── -->
+      <div class="form-row">
+
+        <!-- Title -->
+        <div class="field-group">
+          <label class="field-label">Test Title</label>
+          <div class="input-wrapper"
+               [class.input-error]="f('title')?.touched && f('title')?.invalid"
+               [class.input-valid]="f('title')?.touched && f('title')?.valid">
+            <span class="input-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/>
+                <line x1="8" y1="18" x2="21" y2="18"/>
+                <line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/>
+              </svg>
+            </span>
+            <input type="text" formControlName="title" class="field-input" placeholder="e.g. Java Fundamentals Test"/>
+          </div>
+          <div class="field-error" *ngIf="f('title')?.touched && f('title')?.invalid">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Title is required
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="field-group">
+          <label class="field-label">Description</label>
+          <div class="input-wrapper"
+               [class.input-error]="f('description')?.touched && f('description')?.invalid"
+               [class.input-valid]="f('description')?.touched && f('description')?.valid">
+            <span class="input-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+                <line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+              </svg>
+            </span>
+            <input type="text" formControlName="description" class="field-input" placeholder="Short description of the test"/>
+          </div>
+          <div class="field-error" *ngIf="f('description')?.touched && f('description')?.invalid">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Description is required
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── Two Col: Duration + Total Questions ── -->
+      <div class="form-row">
+
+        <!-- Duration -->
+        <div class="field-group">
+          <label class="field-label">Duration (minutes)</label>
+          <div class="input-wrapper"
+               [class.input-error]="f('durationMinutes')?.touched && f('durationMinutes')?.invalid"
+               [class.input-valid]="f('durationMinutes')?.touched && f('durationMinutes')?.valid">
+            <span class="input-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </span>
+            <input type="number" formControlName="durationMinutes" class="field-input" placeholder="30" min="5"/>
+          </div>
+          <div class="field-error" *ngIf="f('durationMinutes')?.touched && f('durationMinutes')?.errors?.['required']">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Duration is required
+          </div>
+          <div class="field-error" *ngIf="f('durationMinutes')?.touched && f('durationMinutes')?.errors?.['min']">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Minimum 5 minutes required
+          </div>
+        </div>
+
+        <!-- Total Questions -->
+        <div class="field-group">
+          <label class="field-label">Total Questions</label>
+          <div class="input-wrapper"
+               [class.input-error]="f('totalQuestions')?.touched && f('totalQuestions')?.invalid"
+               [class.input-valid]="f('totalQuestions')?.touched && f('totalQuestions')?.valid">
+            <span class="input-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+              </svg>
+            </span>
+            <input type="number" formControlName="totalQuestions" class="field-input" placeholder="10" min="1"/>
+          </div>
+          <div class="field-error" *ngIf="f('totalQuestions')?.touched && f('totalQuestions')?.errors?.['required']">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Total questions is required
+          </div>
+          <div class="field-error" *ngIf="f('totalQuestions')?.touched && f('totalQuestions')?.errors?.['min']">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Minimum 1 question required
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ── Preview Strip ── -->
+      <div class="preview-strip" *ngIf="f('testType')?.value && f('title')?.value">
+        <span class="preview-label">Preview</span>
+        <span class="preview-type-chip" [class]="'chip-' + f('testType')?.value?.toLowerCase()">
+          {{ f('testType')?.value }}
+        </span>
+        <span class="preview-title">{{ f('title')?.value }}</span>
+        <span class="preview-meta" *ngIf="f('durationMinutes')?.value">
+          · {{ f('durationMinutes')?.value }} mins
+        </span>
+        <span class="preview-meta" *ngIf="f('totalQuestions')?.value">
+          · {{ f('totalQuestions')?.value }} questions
+        </span>
+      </div>
+
+      <!-- ── Submit ── -->
+      <div class="submit-row">
+        <button type="submit" class="submit-btn" [disabled]="form.invalid">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Create Test & Add Questions
+        </button>
+        <p class="submit-hint">You'll be redirected to add questions after creation</p>
+      </div>
+
+    </form>
+  </div>
+
+</div>

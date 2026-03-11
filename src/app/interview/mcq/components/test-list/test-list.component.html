@@ -1,0 +1,106 @@
+<!-- test-list.component.html -->
+
+<!-- Background (same as Home) -->
+<div class="home-bg">
+  <div class="grid-overlay"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="tests-wrapper">
+
+  <!-- ── Page Header ── -->
+  <div class="page-header">
+    <div class="header-left">
+      <div class="page-eyebrow">
+        <span class="type-icon">{{ typeIcon }}</span>
+        {{ testType }} Round
+      </div>
+
+      <h1 class="page-title">
+        Available Tests
+        <span class="title-glow"></span>
+      </h1>
+
+      <p class="page-sub">
+        Choose a test, challenge your skills, and track your progress.
+      </p>
+    </div>
+
+    <!-- Count Pill (shows when loaded) -->
+    <div class="count-pill" *ngIf="tests$ | async as tests">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+        <polyline points="14 2 14 8 20 8"/>
+      </svg>
+      {{ tests.length }} test{{ tests.length !== 1 ? 's' : '' }} available
+    </div>
+  </div>
+
+  <!-- ── Loading State ── -->
+  <div *ngIf="!(tests$ | async)" class="loading-state">
+    <div class="loader"></div>
+    <p>Loading tests...</p>
+  </div>
+
+  <!-- ── Tests Grid ── -->
+  <div *ngIf="tests$ | async as tests" class="tests-grid">
+
+    <!-- Empty State -->
+    <div *ngIf="tests.length === 0" class="empty-state">
+      <div class="empty-icon">📋</div>
+      <h3 class="empty-title">No tests available yet</h3>
+      <p class="empty-sub">New {{ testType | titlecase }} practice tests will appear here soon.</p>
+    </div>
+
+    <!-- Test Card -->
+    <div
+      *ngFor="let test of tests; let i = index"
+      class="test-card"
+      [style]="'--i:' + i">
+
+      <div class="card-glow"></div>
+
+      <!-- Top Row -->
+      <div class="card-top">
+        <span class="test-badge">Test {{ i + 1 }}</span>
+        <span class="duration-chip">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+          {{ test.durationMinutes }} mins
+        </span>
+      </div>
+
+      <!-- Title -->
+      <h2 class="test-title">{{ test.title }}</h2>
+
+      <!-- Meta Row -->
+      <div class="card-meta">
+        <span class="meta-chip">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 11l3 3L22 4"/>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+          </svg>
+          {{ test.totalQuestions }} Questions
+        </span>
+        <span class="meta-chip type-meta-chip">
+          {{ testType | titlecase }}
+        </span>
+      </div>
+
+      <!-- CTA -->
+      <button class="start-btn" (click)="start(test.testId)">
+        Start Test
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2.5"
+             stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </button>
+
+    </div>
+
+  </div>
+</div>

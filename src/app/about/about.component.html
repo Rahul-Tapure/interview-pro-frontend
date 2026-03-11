@@ -1,0 +1,126 @@
+<!-- about.component.html -->
+
+<!-- Background -->
+<div class="about-bg">
+  <div class="grid-overlay"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="about-wrapper">
+
+  <!-- ── Hero ── -->
+  <div class="hero-section">
+    <div class="section-eyebrow">About InterviewPro</div>
+    <h1 class="hero-title">
+      Built to Help You<br/>
+      <span class="gradient-text">Land Your Dream Job</span>
+    </h1>
+    <p class="hero-sub">
+      InterviewPro is a comprehensive interview preparation platform designed for students and freshers
+      who want to crack technical, aptitude, and coding rounds with confidence.
+    </p>
+  </div>
+
+  <!-- ── Stats ── -->
+  <div class="stats-row">
+    <div class="stat-card" *ngFor="let s of stats; let i = index" [style]="'--i:' + i">
+      <span class="stat-num">{{ s.num }}</span>
+      <span class="stat-label">{{ s.label }}</span>
+    </div>
+  </div>
+
+  <!-- ── Mission ── -->
+  <div class="two-col-section">
+    <div class="col-text">
+      <div class="section-eyebrow">Our Mission</div>
+      <h2 class="col-title">Democratising Interview Preparation</h2>
+      <p class="col-body">
+        We believe every student deserves access to high-quality interview practice — regardless of their college
+        or background. InterviewPro bridges the gap between academia and industry expectations by providing
+        structured, real-world practice rounds.
+      </p>
+      <p class="col-body">
+        From aptitude tests to live coding challenges, every feature is built with one goal:
+        to give you the edge you need on interview day.
+      </p>
+      <div class="check-list">
+        <div class="check-item" *ngFor="let c of mission">
+          <span class="check-icon">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </span>
+          {{ c }}
+        </div>
+      </div>
+    </div>
+    <div class="col-visual">
+      <div class="visual-card">
+        <div class="vc-top">
+          <span class="vc-dot red"></span>
+          <span class="vc-dot yellow"></span>
+          <span class="vc-dot green"></span>
+        </div>
+        <div class="vc-body">
+          <div class="code-line"><span class="kw">const</span> <span class="var">student</span> <span class="op">=</span> <span class="str">"You"</span>;</div>
+          <div class="code-line"><span class="kw">const</span> <span class="var">goal</span> <span class="op">=</span> <span class="str">"Dream Job"</span>;</div>
+          <div class="code-line">&nbsp;</div>
+          <div class="code-line"><span class="fn">practice</span><span class="op">(</span><span class="var">aptitude</span><span class="op">);</span></div>
+          <div class="code-line"><span class="fn">practice</span><span class="op">(</span><span class="var">technical</span><span class="op">);</span></div>
+          <div class="code-line"><span class="fn">practice</span><span class="op">(</span><span class="var">coding</span><span class="op">);</span></div>
+          <div class="code-line">&nbsp;</div>
+          <div class="code-line"><span class="kw">return</span> <span class="var">goal</span><span class="op">;</span> <span class="cm">// ✅ Hired!</span></div>
+        </div>
+        <div class="vc-badge">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          All tests passed
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Rounds ── -->
+  <div class="rounds-section">
+    <div class="section-eyebrow">What We Offer</div>
+    <h2 class="section-title">Four Rounds, One Platform</h2>
+    <div class="rounds-grid">
+      <div class="round-card" *ngFor="let r of rounds; let i = index" [style]="'--i:' + i">
+        <div class="round-icon" [style]="'--clr:' + r.clr + '; --clr-bg:' + r.bg">
+          <span>{{ r.icon }}</span>
+        </div>
+        <h3 class="round-name">{{ r.name }}</h3>
+        <p class="round-desc">{{ r.desc }}</p>
+        <div class="round-tag" [style]="'color:' + r.clr">{{ r.tag }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Values ── -->
+  <div class="values-section">
+    <div class="section-eyebrow">Our Values</div>
+    <h2 class="section-title">Why Students Choose Us</h2>
+    <div class="values-grid">
+      <div class="value-card" *ngFor="let v of values; let i = index" [style]="'--i:' + i">
+        <div class="value-icon">{{ v.icon }}</div>
+        <h3 class="value-title">{{ v.title }}</h3>
+        <p class="value-desc">{{ v.desc }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CTA ── -->
+  <div class="cta-strip">
+    <div class="cta-content">
+      <div class="cta-icon">🚀</div>
+      <div>
+        <h3 class="cta-title">Ready to start your journey?</h3>
+        <p class="cta-sub">Create a free account and begin practicing today.</p>
+      </div>
+    </div>
+    <div class="cta-btns">
+      <a routerLink="/register" class="cta-btn-primary">Get Started Free →</a>
+      <a routerLink="/contact" class="cta-btn-ghost">Contact Us</a>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,118 @@
+<!-- app.component.html -->
+
+<nav class="app-nav">
+  <div class="nav-inner">
+
+    <!-- ── Left: Logo + Links ── -->
+    <div class="nav-left">
+      <a routerLink="/" class="nav-logo">
+        <span class="logo-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+        </span>
+        <span class="logo-text">InterviewPro</span>
+      </a>
+
+      <div class="nav-links">
+        <a routerLink="/" routerLinkActive="nav-link-active" [routerLinkActiveOptions]="{exact:true}" class="nav-link">
+          Home
+        </a>
+        <a routerLink="/resume" routerLinkActive="nav-link-active" class="nav-link">
+          Resume
+        </a>
+        <a routerLink="/tests" routerLinkActive="nav-link-active" class="nav-link">
+          Tests
+        </a>
+        <a routerLink="/about" routerLinkActive="nav-link-active" class="nav-link">
+          About
+        </a>
+        <a routerLink="/contact" routerLinkActive="nav-link-active" class="nav-link">
+          Contact
+        </a>
+      </div>
+    </div>
+
+    <!-- ── Right: Auth ── -->
+    <div class="nav-right">
+
+      <!-- LOGGED IN -->
+      <ng-container *ngIf="isLoggedIn$ | async; else loggedOut">
+        <div class="avatar-wrapper">
+          <button (click)="toggleDropdown()" class="avatar-btn" [class.avatar-open]="dropdownOpen">
+            <img
+              src="https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_640.png"
+              class="avatar-img"
+              alt="Profile"
+            />
+            <span class="avatar-ring"></span>
+          </button>
+
+          <!-- Dropdown -->
+          <div class="nav-dropdown" [class.dropdown-visible]="dropdownOpen">
+            <div class="dropdown-header">
+              <img
+                src="https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_640.png"
+                class="dropdown-avatar"
+                alt="User"
+              />
+              <div>
+                <div class="dropdown-name">My Account</div>
+                <div class="dropdown-role">
+                  <span *ngIf="hasCreatorRole()">Creator</span>
+                  <span *ngIf="hasUserRole() && !hasCreatorRole()">Student</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="dropdown-divider"></div>
+
+            <a *ngIf="hasUserRole()" routerLink="/dashboard/user" class="dropdown-item" (click)="dropdownOpen=false">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+                <rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+              </svg>
+              User Dashboard
+            </a>
+
+            <a *ngIf="hasCreatorRole()" routerLink="/dashboard/creator" class="dropdown-item" (click)="dropdownOpen=false">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+              </svg>
+              Creator Dashboard
+            </a>
+
+            <div class="dropdown-divider"></div>
+
+            <button (click)="logout()" class="dropdown-item dropdown-logout">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+              </svg>
+              Logout
+            </button>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- LOGGED OUT -->
+      <ng-template #loggedOut>
+        <div class="auth-btns">
+          <a routerLink="/login" class="btn-ghost-nav">Log In</a>
+          <a routerLink="/register" class="btn-solid-nav">Sign Up</a>
+        </div>
+      </ng-template>
+
+    </div>
+  </div>
+
+  <!-- Neon bottom line -->
+  <div class="nav-glow-line"></div>
+</nav>
+
+<!-- Click-away overlay -->
+<div *ngIf="dropdownOpen" class="dropdown-overlay" (click)="dropdownOpen=false"></div>
+
+<main class="app-main">
+  <router-outlet></router-outlet>
+</main>

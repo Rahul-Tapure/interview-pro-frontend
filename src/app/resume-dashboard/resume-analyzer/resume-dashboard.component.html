@@ -1,0 +1,182 @@
+<!-- resume-analyzer.html -->
+
+<!-- Animated Background -->
+<div class="home-bg">
+  <div class="grid-overlay"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="resume-wrapper">
+
+  <!-- ── Page Title ── -->
+  <h2 class="page-title">
+    Resume <span class="gradient-text">Analyzer</span>
+  </h2>
+
+  <!-- ── New Analysis Card ── -->
+  <div class="resume-card">
+
+    <div class="card-header">
+      <div class="header-left">
+        <h3>Analyze New Resume</h3>
+        <p class="card-sub">Get enterprise-grade ATS scoring & AI feedback tailored to your role</p>
+      </div>
+      <div class="card-badge">✨ New</div>
+    </div>
+
+    <!-- Target Role Input -->
+    <div class="form-group">
+      <label class="form-label">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        Target Role
+      </label>
+      <input
+        type="text"
+        class="form-input"
+        [(ngModel)]="roles"
+        placeholder="e.g. Java Backend Developer, Full Stack Engineer"
+        [disabled]="loading"
+      />
+    </div>
+
+    <!-- File Upload Zone -->
+    <div class="form-group">
+      <label class="form-label">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/>
+        </svg>
+        Resume Upload
+      </label>
+
+      <div class="upload-zone" [class.upload-active]="selectedFile" [class.upload-disabled]="loading">
+        <input
+          type="file"
+          id="fileInput"
+          class="upload-input"
+          (change)="onFileChange($event)"
+          accept=".pdf,.doc,.docx"
+          [disabled]="loading"
+        />
+        <label for="fileInput" class="upload-label">
+          
+          <div class="upload-icon" *ngIf="!selectedFile">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+          </div>
+
+          <div class="upload-icon upload-success" *ngIf="selectedFile">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="9" y1="15" x2="15" y2="15"/>
+              <line x1="12" y1="12" x2="12" y2="18"/>
+            </svg>
+          </div>
+
+          <div class="upload-text" *ngIf="!selectedFile">
+            <span class="upload-title">Click to upload or drag & drop</span>
+            <span class="upload-hint">PDF, DOC, DOCX (Max 5MB)</span>
+          </div>
+
+          <div class="upload-text upload-success-text" *ngIf="selectedFile">
+            <span class="upload-title">✓ {{ selectedFileName }}</span>
+            <span class="upload-hint">Click to change file</span>
+          </div>
+
+        </label>
+      </div>
+    </div>
+
+    <!-- Analyze Button -->
+    <button class="analyze-btn" (click)="analyze()" [disabled]="loading || !selectedFile || !roles">
+      <span class="btn-spinner" *ngIf="loading"></span>
+      <svg *ngIf="!loading" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+      </svg>
+      {{ loading ? 'Analyzing Resume...' : 'Analyze Resume' }}
+    </button>
+
+    <!-- Error Message -->
+    <div class="error-banner" *ngIf="error">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      {{ error }}
+    </div>
+
+  </div>
+
+  <!-- ── History Card ── -->
+  <div class="history-card">
+
+    <div class="card-header">
+      <div class="header-left">
+        <h3>Previous Analyses</h3>
+        <p class="card-sub">Track your resume improvement journey over time</p>
+      </div>
+      <div class="history-count">
+        {{ resumes.length }} {{ resumes.length === 1 ? 'Report' : 'Reports' }}
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="resumes.length === 0">
+      <div class="empty-icon">📋</div>
+      <div class="empty-text">No previous analyses yet</div>
+      <div class="empty-hint">Upload your first resume above to get started</div>
+    </div>
+
+    <!-- History List -->
+    <div class="history-list" *ngIf="resumes.length > 0">
+      <div class="history-item" *ngFor="let r of resumes; let i = index" [style]="'--i:' + i">
+
+        <div class="history-left">
+          <div class="role-info">
+            <div class="role-icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </div>
+            <div>
+              <strong class="role-title">{{ r.role || 'General Role' }}</strong>
+              <div class="history-meta">
+                <span class="score-badge" [class.high-score]="r.score >= 85" [class.mid-score]="r.score >= 70 && r.score < 85">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                  {{ r.score }}/100
+                </span>
+                <span class="meta-dot">•</span>
+                <span class="history-date">{{ r.createdAt | date:'MMM d, y' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="history-actions">
+          <button class="view-btn" (click)="viewResult(r.id)">
+            View Report
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+</div>

@@ -1,0 +1,117 @@
+
+ 
+<!-- Animated Background -->
+<div class="home-bg">
+  <div class="grid-overlay"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="home-wrapper">
+
+
+ <!-- Section Label -->
+  <div class="section-label pt-8">Choose Your Round</div>
+
+  <!-- Cards Grid -->
+  <div class="cards-grid">
+
+    <!-- Communication Round (Coming Soon) -->
+    <div class="round-card card-locked" style="--i:0">
+      <div class="card-glow"></div>
+      <div class="card-top">
+        <div class="card-icon icon-comm">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+        </div>
+        <div class="card-badge badge-soon">Coming Soon</div>
+      </div>
+      <h2 class="card-title">Communication Round</h2>
+      <p class="card-desc">HR interviews, soft skills & verbal communication practice sessions to build your confidence.</p>
+      <div class="card-meta">
+        <span class="meta-tag">🎤 HR Interview</span>
+        <span class="meta-tag">🗣️ Soft Skills</span>
+      </div>
+      <button disabled class="card-btn btn-disabled">
+        <span>Unlock Soon</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      </button>
+    </div>
+
+    <!-- Aptitude Round -->
+    <div class="round-card card-aptitude" style="--i:1">
+      <div class="card-glow"></div>
+      <div class="card-top">
+        <div class="card-icon icon-apt">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 19v-6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2z"/><path d="M15 13v-2a2 2 0 0 0-2-2h-2"/><path d="M21 7v12a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-6"/>
+          </svg>
+        </div>
+        <div class="card-badge badge-active">Available</div>
+      </div>
+      <h2 class="card-title">Aptitude Round</h2>
+      <p class="card-desc">Sharpen your quantitative aptitude and logical reasoning with timed practice tests.</p>
+      <div class="card-meta">
+        <span class="meta-tag">🔢 Quantitative</span>
+        <span class="meta-tag">🧠 Logical</span>
+      </div>
+      <a [routerLink]="['/home','aptitude','tests']" class="card-btn btn-primary">
+  <span>View Tests</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+  
+</a>
+  
+    </div>
+
+    <!-- Technical MCQ Round -->
+    <div class="round-card card-technical" style="--i:2">
+      <div class="card-glow"></div>
+      <div class="card-top">
+        <div class="card-icon icon-tech">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+          </svg>
+        </div>
+        <div class="card-badge badge-active">Available</div>
+      </div>
+      <h2 class="card-title">Technical Round</h2>
+      <p class="card-desc">Test your technical knowledge with domain-specific MCQs covering CS fundamentals.</p>
+      <div class="card-meta">
+        <span class="meta-tag">💻 CS Concepts</span>
+        <span class="meta-tag">📚 MCQ Format</span>
+      </div>
+      <a [routerLink]="['/home','technical','tests']" class="card-btn btn-primary">
+  <span>View Tests</span>
+  
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+    
+  </a>
+    </div>
+
+    <!-- Coding Round -->
+    <div class="round-card card-coding" style="--i:3">
+      <div class="card-glow"></div>
+      <div class="card-top">
+        <div class="card-icon icon-code">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/>
+          </svg>
+        </div>
+        <div class="card-badge badge-active">Available</div>
+      </div>
+      <h2 class="card-title">Coding Round</h2>
+      <p class="card-desc">Solve real-world coding challenges in an in-browser IDE with multiple language support.</p>
+      <div class="card-meta">
+        <span class="meta-tag">⚡ Live IDE</span>
+        <span class="meta-tag">🏆 Challenges</span>
+      </div>
+      <a [routerLink]="['/home','coding','tests']" class="card-btn btn-primary">
+  <span>View Tests</span>
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+
+  </div>
+  </div>

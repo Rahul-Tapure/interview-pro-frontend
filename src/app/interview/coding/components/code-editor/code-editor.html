@@ -1,0 +1,33 @@
+ <div class="h-full w-full flex flex-col">
+      <!-- Toolbar -->
+      <div class="flex items-center justify-between p-2 border-b bg-gray-50">
+        <select
+          class="border rounded px-2 py-1 text-sm"
+          [(ngModel)]="language"
+          (change)="onLanguageChange()"
+        >
+          <option *ngFor="let lang of languages" [value]="lang.value">
+            {{ lang.label }}
+          </option>
+        </select>
+
+        <div class="space-x-2">
+          <button
+            class="px-3 py-1 text-sm bg-gray-200 rounded hover:bg-gray-300"
+            (click)="run.emit(code)"
+          >
+            Run
+          </button>
+
+          <button
+            class="px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+            (click)="submit.emit(code)"
+          >
+            Submit
+          </button>
+        </div>
+      </div>
+
+      <!-- Monaco Editor Container -->
+      <div #editorContainer class="flex-1"></div>
+    </div>

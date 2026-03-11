@@ -1,0 +1,124 @@
+<!-- communication-start-test.html (Student) -->
+
+<!-- Background -->
+<div class="home-bg">
+  <div class="grid-overlay"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+</div>
+
+<!-- Loading State -->
+<div class="loading-wrapper" *ngIf="!questions.length">
+  <div class="loading-card">
+    <div class="loading-dots">
+      <div class="ldot"></div><div class="ldot"></div><div class="ldot"></div>
+    </div>
+    <p class="loading-text">Loading communication test...</p>
+  </div>
+</div>
+
+<div class="test-wrapper" *ngIf="questions.length">
+
+  <!-- ── Header Card ── -->
+  <div class="test-header">
+    <div class="header-left">
+      <div class="test-eyebrow">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        Communication Round
+      </div>
+      <div class="test-progress">
+        Question {{ currentIndex + 1 }} <span class="progress-sep">/</span> {{ questions.length }}
+      </div>
+    </div>
+
+    <!-- Timer Badge -->
+    <div class="timer-badge"
+      [class.timer-warning]="timer <= 30 && timer > 10"
+      [class.timer-danger]="timer <= 10">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+      </svg>
+      {{ timer }}s
+    </div>
+  </div>
+
+  <!-- ── Question Card ── -->
+  <div class="question-card">
+    <div class="q-label">Your Question</div>
+    <p class="question-text">{{ questions[currentIndex].questionText }}</p>
+
+    <!-- Expected Points Hint (if provided) -->
+    <div class="hint-box" *ngIf="questions[currentIndex].expectedPoints">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
+      </svg>
+      <span>{{ questions[currentIndex].expectedPoints }}</span>
+    </div>
+  </div>
+
+  <!-- ── Recording Card ── -->
+  <div class="recording-card">
+    
+    <!-- Recording Status -->
+    <div class="rec-status">
+      <div class="status-indicator" [class.status-recording]="recording" [class.status-recorded]="recorded && !recording">
+        <div class="status-dot"></div>
+      </div>
+      <span class="status-text">
+        {{ recording ? 'Recording...' : recorded ? 'Recording Complete' : 'Ready to Record' }}
+      </span>
+    </div>
+
+    <!-- Waveform Animation (shows when recording) -->
+    <div class="waveform" *ngIf="recording">
+      <div class="wave-bar" *ngFor="let i of [1,2,3,4,5]"></div>
+    </div>
+
+    <!-- Audio Preview (shows when recorded but not submitted) -->
+    <div class="audio-preview" *ngIf="recorded && !recording">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 18V5l12-2v13"/>
+        <circle cx="6" cy="18" r="3"/>
+        <circle cx="18" cy="16" r="3"/>
+      </svg>
+      <span>Audio recorded successfully</span>
+    </div>
+
+    <!-- Control Buttons -->
+    <div class="controls">
+      <button class="btn-record" (click)="startRecording()" [disabled]="recording || recorded">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+          <line x1="12" y1="19" x2="12" y2="23"/>
+          <line x1="8" y1="23" x2="16" y2="23"/>
+        </svg>
+        Start Recording
+      </button>
+
+      <button class="btn-stop" (click)="stopRecording()" [disabled]="!recording">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <rect x="6" y="6" width="12" height="12" rx="2"/>
+        </svg>
+        Stop
+      </button>
+
+      <button class="btn-submit" (click)="submitAnswer()" [disabled]="!recorded || !submissionId || submitting">
+        <span class="btn-spinner" *ngIf="submitting"></span>
+        <svg *ngIf="!submitting" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        {{ submitting ? 'Submitting...' : 'Submit Answer' }}
+      </button>
+    </div>
+
+  </div>
+
+  <!-- ── Progress Bar ── -->
+  <div class="progress-track">
+    <div class="progress-fill" [style.width]="((currentIndex + 1) / questions.length * 100) + '%'"></div>
+  </div>
+
+</div>

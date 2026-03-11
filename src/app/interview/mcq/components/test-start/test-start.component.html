@@ -1,0 +1,162 @@
+<!-- test-start.component.html -->
+
+<!-- Background -->
+<div class="test-bg">
+  <div class="grid-overlay"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+</div>
+
+<!-- Loading State -->
+<div class="loading-wrapper" *ngIf="!(questions$ | async)">
+  <div class="loading-card">
+    <div class="loading-dots">
+      <div class="ldot"></div><div class="ldot"></div><div class="ldot"></div>
+    </div>
+    <p class="loading-text">Loading questions...</p>
+  </div>
+</div>
+
+<ng-container *ngIf="questions$ | async as questions">
+<div class="test-layout">
+
+  <!-- ══════════ LEFT: Questions ══════════ -->
+  <div class="questions-col">
+
+    <!-- ── Sticky Header ── -->
+    <div class="test-header">
+      <div class="header-info">
+        <div class="page-eyebrow">Mock Interview</div>
+        <h1 class="test-title">{{ testTitle }}</h1>
+      </div>
+
+      <!-- Timer -->
+      <div class="timer-pill" [class.timer-warning]="totalSeconds() <= 60" [class.timer-danger]="totalSeconds() <= 30">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+        <span class="timer-value">{{ formattedTime() }}</span>
+      </div>
+    </div>
+
+    <!-- ── Progress Bar ── -->
+    <div class="progress-bar-track">
+      <div class="progress-bar-fill" [style.width]="(answeredCount / questions.length * 100) + '%'"></div>
+    </div>
+    <div class="progress-label">
+      <span>{{ answeredCount }} of {{ questions.length }} answered</span>
+      <span>{{ questions.length - answeredCount }} remaining</span>
+    </div>
+
+    <!-- ── Questions ── -->
+    <div class="questions-list">
+      <div
+        class="question-card"
+        *ngFor="let q of questions; let i = index"
+        [id]="'q' + i"
+        [style]="'--i:' + i"
+        [class.q-answered]="answers[q.questionId] !== undefined">
+
+        <!-- Question Header -->
+        <div class="q-top">
+          <div class="q-num-badge" [class.num-answered]="answers[q.questionId] !== undefined">
+            {{ answers[q.questionId] !== undefined ? '✓' : (i + 1) }}
+          </div>
+          <p class="q-text">{{ q.questionText }}</p>
+        </div>
+
+        <!-- Options -->
+        <div class="options-list">
+          <label
+            class="option-item"
+            *ngFor="let o of q.options; let j = index"
+            [class.option-active]="answers[q.questionId] === o.optionId"
+            [class.option-disabled]="submitted">
+
+            <input
+              type="radio"
+              class="opt-radio-native"
+              [name]="'q_' + q.questionId"
+              [disabled]="submitted"
+              [checked]="answers[q.questionId] === o.optionId"
+              (change)="select(q.questionId, o.optionId)"
+            />
+            <span class="opt-radio-custom" [class.radio-checked]="answers[q.questionId] === o.optionId"></span>
+            <span class="opt-letter" [class.letter-active]="answers[q.questionId] === o.optionId">
+              {{ optionLetter(j) }}
+            </span>
+            <span class="opt-text">{{ o.optionText }}</span>
+          </label>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Submit Button ── -->
+    <div class="submit-section" *ngIf="!submitted">
+      <div class="submit-warning" *ngIf="answeredCount < questions.length">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        {{ questions.length - answeredCount }} question{{ questions.length - answeredCount !== 1 ? 's' : '' }} unanswered
+      </div>
+      <button type="button" class="submit-btn" (click)="submit()" [disabled]="submitted">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/>
+        </svg>
+        Submit Test
+      </button>
+    </div>
+
+    <!-- Submitted state -->
+    <div class="submitted-banner" *ngIf="submitted">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+      </svg>
+      Test submitted! Redirecting to results...
+    </div>
+
+  </div>
+
+  <!-- ══════════ RIGHT: Navigator ══════════ -->
+  <aside class="navigator-col">
+    <div class="navigator-card">
+      <div class="nav-header">
+        <span class="nav-title">Question Navigator</span>
+        <span class="nav-count">{{ answeredCount }}/{{ questions.length }}</span>
+      </div>
+
+      <div class="nav-grid">
+        <button
+          class="nav-btn"
+          *ngFor="let q of questions; let i = index"
+          [class.nav-answered]="answers[q.questionId] !== undefined"
+          [class.nav-current]="isCurrentlyVisible(i)"
+          (click)="scrollTo(i)">
+          {{ i + 1 }}
+        </button>
+      </div>
+
+      <div class="nav-legend">
+        <div class="legend-item">
+          <span class="legend-sq sq-answered"></span> Answered
+        </div>
+        <div class="legend-item">
+          <span class="legend-sq sq-unanswered"></span> Unanswered
+        </div>
+      </div>
+
+      <!-- Mini timer -->
+      <div class="nav-timer" [class.timer-warning]="totalSeconds() <= 60" [class.timer-danger]="totalSeconds() <= 30">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+        {{ formattedTime() }}
+      </div>
+
+      <button type="button" class="nav-submit-btn" (click)="submit()" [disabled]="submitted" *ngIf="!submitted">
+        Submit Test
+      </button>
+    </div>
+  </aside>
+
+</div>
+</ng-container>

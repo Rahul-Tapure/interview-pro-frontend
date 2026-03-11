@@ -1,0 +1,151 @@
+<!-- view-coding-test.html -->
+
+<!-- Background -->
+<div class="view-bg">
+  <div class="grid-overlay"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+</div>
+
+<!-- Loading State -->
+<div class="loading-wrapper" *ngIf="loading">
+  <div class="loading-card">
+    <div class="loading-dots">
+      <div class="ldot"></div><div class="ldot"></div><div class="ldot"></div>
+    </div>
+    <p class="loading-text">Loading test details...</p>
+  </div>
+</div>
+
+<div class="view-wrapper" *ngIf="!loading">
+
+  <!-- ── Test Header ── -->
+  <div class="test-header">
+    <div class="header-left">
+      <div class="page-eyebrow">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/>
+        </svg>
+        Coding Test Preview
+      </div>
+      <h1 class="test-title">{{ test?.title }}</h1>
+      <div class="test-meta">
+        <span class="meta-item">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+          {{ test?.durationMinutes }} minutes
+        </span>
+        <span class="meta-item">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/>
+          </svg>
+          {{ questions.length }} questions
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Questions List ── -->
+  <div class="questions-list">
+
+    <div
+      class="question-card"
+      *ngFor="let q of questions; let i = index"
+      [style]="'--i:' + i">
+
+      <!-- Question Header -->
+      <div class="q-header">
+        <div class="q-num-badge">Q{{ q.questionIndex }}</div>
+        <div class="q-header-right">
+          <span class="diff-badge"
+            [class.diff-easy]="q.difficulty === 'EASY'"
+            [class.diff-medium]="q.difficulty === 'MEDIUM'"
+            [class.diff-hard]="q.difficulty === 'HARD'">
+            {{ q.difficulty }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Question Title -->
+      <h3 class="q-title">{{ q.title }}</h3>
+
+      <!-- Question Body -->
+      <div class="q-section">
+        <div class="section-label">Description</div>
+        <p class="q-description">{{ q.description }}</p>
+      </div>
+
+      <div class="q-section" *ngIf="q.constraints">
+        <div class="section-label">Constraints</div>
+        <pre class="constraints-block">{{ q.constraints }}</pre>
+      </div>
+
+      <div class="q-limits">
+        <span class="limit-item">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+          </svg>
+          Time: {{ q.timeLimit }}s
+        </span>
+        <span class="limit-item">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 3v4M8 3v4"/>
+          </svg>
+          Memory: {{ q.memoryLimit }}MB
+        </span>
+      </div>
+
+      <!-- Test Cases -->
+      <div class="testcases-section">
+        <div class="section-label">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 11 12 14 22 4"/>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+          </svg>
+          Test Cases ({{ q.testCases?.length || 0 }})
+        </div>
+
+        <div class="testcases-grid">
+          <div
+            class="tc-card"
+            *ngFor="let tc of q.testCases; let j = index"
+            [class.tc-sample]="tc.sample"
+            [class.tc-hidden]="!tc.sample">
+
+            <div class="tc-top">
+              <span class="tc-label">Case {{ j + 1 }}</span>
+              <span class="tc-vis-badge"
+                [class.badge-sample]="tc.sample"
+                [class.badge-hidden]="!tc.sample">
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path *ngIf="tc.sample" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle *ngIf="tc.sample" cx="12" cy="12" r="3"/>
+                  <rect *ngIf="!tc.sample" x="3" y="11" width="18" height="11" rx="2"/>
+                  <path *ngIf="!tc.sample" d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                {{ tc.sample ? 'Visible' : 'Hidden' }}
+              </span>
+            </div>
+
+            <div class="tc-content">
+              <div class="tc-row">
+                <span class="tc-key">Input</span>
+                <code class="tc-val">{{ tc.input }}</code>
+              </div>
+              <div class="tc-row">
+                <span class="tc-key">Output</span>
+                <code class="tc-val">{{ tc.expectedOutput }}</code>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

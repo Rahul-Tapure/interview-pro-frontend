@@ -1,0 +1,202 @@
+<!-- user-dashboard.html -->
+
+<!-- Background -->
+<div class="dash-bg">
+  <div class="grid-overlay"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+</div>
+
+<div class="dash-wrapper">
+
+  <!-- ── Page Header ── -->
+  <div class="page-header">
+    <div>
+      <div class="page-eyebrow">Student Portal</div>
+      <h1 class="page-title">My Dashboard</h1>
+      <p class="page-sub">Track your progress across all interview rounds</p>
+    </div>
+    <button class="btn-primary" (click)="takeTest()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+      </svg>
+      Take New Test
+    </button>
+  </div>
+
+  <!-- ── Stats Cards ── -->
+  <div class="stats-grid">
+    <div class="stat-card" style="--i:0">
+      <div class="stat-icon icon-total">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+          <polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/>
+          <line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+        </svg>
+      </div>
+      <div class="stat-info">
+        <div class="stat-num">{{ results.length }}</div>
+        <div class="stat-label">Tests Taken</div>
+      </div>
+      <div class="stat-trend">📋</div>
+    </div>
+
+    <div class="stat-card" style="--i:1">
+      <div class="stat-icon icon-pass">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+      </div>
+      <div class="stat-info">
+        <div class="stat-num">{{ passedCount }}</div>
+        <div class="stat-label">Tests Passed</div>
+      </div>
+      <div class="stat-trend">✅</div>
+    </div>
+
+    <div class="stat-card" style="--i:2">
+      <div class="stat-icon icon-score">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+        </svg>
+      </div>
+      <div class="stat-info">
+        <div class="stat-num">{{ avgScore }}%</div>
+        <div class="stat-label">Average Score</div>
+      </div>
+      <div class="stat-trend">📈</div>
+    </div>
+
+    <div class="stat-card" style="--i:3">
+      <div class="stat-icon icon-rate">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+        </svg>
+      </div>
+      <div class="stat-info">
+        <div class="stat-num">{{ passRate }}%</div>
+        <div class="stat-label">Pass Rate</div>
+      </div>
+      <div class="stat-trend">🏆</div>
+    </div>
+  </div>
+
+  <!-- ── Chart ── -->
+  <div class="chart-card">
+    <div class="chart-header">
+      <div>
+        <h3 class="chart-title">Score Progression</h3>
+        <p class="chart-sub">Your performance across all tests</p>
+      </div>
+      <div class="chart-legend">
+        <span class="legend-dot"></span>
+        Score per Test
+      </div>
+    </div>
+    <div class="chart-body">
+      <canvas id="scoreChart"></canvas>
+      <!-- Empty state for chart -->
+      <div class="chart-empty" *ngIf="results.length === 0">
+        <span>📊</span>
+        <p>Take your first test to see your score chart</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Results Table ── -->
+  <div class="table-card">
+    <div class="table-header">
+      <div>
+        <h3 class="table-title">Previous Results</h3>
+        <p class="table-sub">All your completed tests and scores</p>
+      </div>
+      <div class="result-count" *ngIf="results.length > 0">
+        {{ results.length }} attempt{{ results.length !== 1 ? 's' : '' }}
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-scroll" *ngIf="results.length > 0">
+      <table class="results-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Type</th>
+            <th>Title</th>
+            <th>Score</th>
+            <th>Total</th>
+            <th>Result</th>
+            <th>Time Taken</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let r of results; let i = index" class="table-row" [style]="'--i:' + i">
+            <td>
+              <span class="test-num">Test {{ i + 1 }}</span>
+            </td>
+           <td>
+  <span
+    class="type-badge"
+    [class.badge-apt]="r.type === 'APTITUDE'"
+    [class.badge-tech]="r.type === 'TECHNICAL'"
+    [class.badge-coding]="r.type === 'CODING'"
+  >
+    {{
+      r.type === 'APTITUDE'
+        ? 'Aptitude'
+        : r.type === 'CODING'
+        ? 'Coding'
+        : 'Technical'
+    }}
+  </span>
+</td>
+
+            <td class="title-cell">{{ r.title }}</td>
+            <td>
+              <div class="score-wrap">
+                <span class="score-val">{{ r.score }}</span>
+                <div class="score-bar-track">
+                  <div class="score-bar-fill"
+                       [style.width]="(r.score / r.totalQuestions * 100) + '%'"
+                       [class.bar-good]="(r.score / r.totalQuestions) >= 0.6"
+                       [class.bar-bad]="(r.score / r.totalQuestions) < 0.6">
+                  </div>
+                </div>
+              </div>
+            </td>
+            <td class="total-cell">{{ r.totalQuestions }}</td>
+            <td>
+              <span class="result-badge" [class.badge-pass]="r.passed" [class.badge-fail]="!r.passed">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline *ngIf="r.passed" points="20 6 9 17 4 12"/>
+                  <line *ngIf="!r.passed" x1="18" y1="6" x2="6" y2="18"/>
+                  <line *ngIf="!r.passed" x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+                {{ r.passed ? 'Passed' : 'Failed' }}
+              </span>
+            </td>
+            <td class="time-cell">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+              </svg>
+              {{ r.timeTaken }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Empty State -->
+    <div class="table-empty" *ngIf="results.length === 0">
+      <div class="empty-icon">📝</div>
+      <h4 class="empty-title">No attempts yet</h4>
+      <p class="empty-sub">Start your first test to see your results here</p>
+      <button class="btn-primary" (click)="takeTest()">
+        Take Your First Test →
+      </button>
+    </div>
+
+  </div>
+
+</div>

@@ -1,0 +1,192 @@
+<!-- home.component.html -->
+
+<!-- Animated Background -->
+<div class="home-bg">
+  <div class="grid-overlay"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+</div>
+
+<div class="home-wrapper">
+
+  <!-- Hero Header -->
+  <div class="hero-header">
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      Your Interview Journey Starts Here
+    </div>
+
+    <h1 class="hero-title">
+      Master Every<br />
+      <span class="gradient-text">Interview Round</span>
+    </h1>
+
+    <p class="hero-sub">
+      Practice communication, aptitude, technical MCQs, and coding challenges —
+      all in one place. Track progress, sharpen skills, get hired.
+    </p>
+
+    <div class="hero-stats">
+      <div class="stat-item">
+        <span class="stat-num">4</span>
+        <span class="stat-label">Interview Rounds</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-num">200+</span>
+        <span class="stat-label">Practice Questions</span>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <span class="stat-num">98%</span>
+        <span class="stat-label">Success Rate</span>
+      </div>
+    </div>
+  </div>
+  <!-- Section Label -->
+  <div class="section-label pt-8">Resume Analyzer</div>
+
+  <!-- Resume Analyzer Round -->
+<div class="round-card card-resume" style="--i:4">
+  <div class="card-glow"></div>
+
+  <div class="card-top">
+    <div class="card-icon icon-resume">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none"
+           stroke="currentColor" stroke-width="1.8"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414A1 1 0 0121 9.414V19a2 2 0 01-2 2z"/>
+      </svg>
+    </div>
+    <div class="card-badge badge-active">New</div>
+  </div>
+
+  <h2 class="card-title">Resume Analyzer</h2>
+  <p class="card-desc">
+    Get enterprise-level ATS scoring, strengths, weaknesses, and AI suggestions tailored to your target role.
+  </p>
+
+  <div class="card-meta">
+    <span class="meta-tag">📄 ATS Score</span>
+    <span class="meta-tag">🤖 AI Feedback</span>
+  </div>
+<a routerLink="/resume" class="card-btn btn-primary">
+  Analyze Resume
+</a>
+</div>
+
+
+  <!-- Section Label -->
+  <div class="section-label pt-8">Choose Your Round</div>
+
+  <!-- Cards Grid -->
+  <div class="cards-grid">
+
+    <!-- Communication Round (Coming Soon) -->
+    <div class="round-card card-communication" style="--i:1">
+      <div class="card-glow"></div>
+      <div class="card-top">
+        <div class="card-icon icon-comm">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+        </div>
+        <div class="card-badge badge-active">Available</div>
+      </div>
+      <h2 class="card-title">Communication Round</h2>
+      <p class="card-desc">HR interviews, soft skills & verbal communication practice sessions to build your confidence.</p>
+      <div class="card-meta">
+        <span class="meta-tag">🎤 HR Interview</span>
+        <span class="meta-tag">🗣️ Soft Skills</span>
+      </div>
+      <button routerLink="communication/tests" class="card-btn btn-primary" >
+        <span>View Tests</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+    </div>
+
+    <!-- Aptitude Round -->
+    <div class="round-card card-aptitude" style="--i:1">
+      <div class="card-glow"></div>
+      <div class="card-top">
+        <div class="card-icon icon-apt">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 19v-6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2z"/><path d="M15 13v-2a2 2 0 0 0-2-2h-2"/><path d="M21 7v12a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-6"/>
+          </svg>
+        </div>
+        <div class="card-badge badge-active">Available</div>
+      </div>
+      <h2 class="card-title">Aptitude Round</h2>
+      <p class="card-desc">Sharpen your quantitative aptitude and logical reasoning with timed practice tests.</p>
+      <div class="card-meta">
+        <span class="meta-tag">🔢 Quantitative</span>
+        <span class="meta-tag">🧠 Logical</span>
+      </div>
+      <a routerLink="aptitude/tests" class="card-btn btn-primary">
+        <span>View Tests</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+
+    <!-- Technical MCQ Round -->
+    <div class="round-card card-technical" style="--i:2">
+      <div class="card-glow"></div>
+      <div class="card-top">
+        <div class="card-icon icon-tech">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+          </svg>
+        </div>
+        <div class="card-badge badge-active">Available</div>
+      </div>
+      <h2 class="card-title">Technical Round</h2>
+      <p class="card-desc">Test your technical knowledge with domain-specific MCQs covering CS fundamentals.</p>
+      <div class="card-meta">
+        <span class="meta-tag">💻 CS Concepts</span>
+        <span class="meta-tag">📚 MCQ Format</span>
+      </div>
+      <a routerLink="technical/tests" class="card-btn btn-primary">
+        <span>View Tests</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+
+    <!-- Coding Round -->
+    <div class="round-card card-coding" style="--i:3">
+      <div class="card-glow"></div>
+      <div class="card-top">
+        <div class="card-icon icon-code">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/>
+          </svg>
+        </div>
+        <div class="card-badge badge-active">Available</div>
+      </div>
+      <h2 class="card-title">Coding Round</h2>
+      <p class="card-desc">Solve real-world coding challenges in an in-browser IDE with multiple language support.</p>
+      <div class="card-meta">
+        <span class="meta-tag">⚡ Live IDE</span>
+        <span class="meta-tag">🏆 Challenges</span>
+      </div>
+      <a routerLink="coding/tests" class="card-btn btn-primary">
+        <span>View Tests</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+
+  </div>
+
+  <!-- Bottom CTA Strip -->
+  <div class="cta-strip">
+    <div class="cta-content">
+      <div class="cta-icon">🚀</div>
+      <div>
+        <h3 class="cta-title">Ready to ace your interviews?</h3>
+        <p class="cta-sub">Start with any round and build your way up to a full mock interview experience.</p>
+      </div>
+    </div>
+    <a routerLink="/tests" class="cta-btn">Start Practicing →</a>
+  </div>
+
+</div>
