@@ -1,5 +1,5 @@
 // resume-result.component.ts
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
@@ -21,7 +21,8 @@ export class ResumeResultComponent {
     private route: ActivatedRoute,
     private router: Router,
     private http: HttpClient,
-    private location: Location
+    private location: Location,
+    private cdr: ChangeDetectorRef
   ) {
     this.resultId = this.route.snapshot.paramMap.get('id');
 
@@ -30,6 +31,7 @@ export class ResumeResultComponent {
         .subscribe({
           next: (res: any) => {
             this.result = res;
+            this.cdr.detectChanges();
           },
           error: (err) => {
             console.error('Failed to load resume result:', err);

@@ -208,3 +208,169 @@
   .left-panel  { height: auto; min-height: 50vh; }
   .right-panel { height: 60vh; }
 }
+
+/* ─── Hidden ───────────────────────────────────── */
+.hidden { display: none !important; }
+
+/* ─── Results Screen ───────────────────────────── */
+@keyframes resultsFadeIn {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes checkPop {
+  0%   { transform: scale(0); opacity: 0; }
+  60%  { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.results-wrapper {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  padding: 2rem;
+}
+
+.results-card {
+  background: #111827;
+  border: 1px solid rgba(99,102,241,.2);
+  border-radius: 24px;
+  padding: 3rem;
+  max-width: 580px;
+  width: 100%;
+  text-align: center;
+  animation: resultsFadeIn .6s ease both;
+}
+
+.results-icon {
+  width: 80px; height: 80px;
+  margin: 0 auto 1.5rem;
+  background: rgba(52,211,153,.08);
+  border: 2px solid rgba(52,211,153,.25);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  animation: checkPop .5s .2s ease both;
+}
+
+.results-title {
+  font-size: 1.5rem; font-weight: 800;
+  color: #e2e8f0; margin-bottom: .35rem;
+}
+
+.results-sub {
+  font-size: .88rem; color: #64748b; margin-bottom: 1.5rem;
+}
+
+/* Stats row */
+.results-stats {
+  display: flex; justify-content: center; gap: 2rem;
+  margin-bottom: 1.75rem;
+}
+
+.rstat {
+  display: flex; flex-direction: column; align-items: center; gap: .25rem;
+}
+
+.rstat-num {
+  font-size: 1.6rem; font-weight: 800;
+}
+
+.rstat-passed { color: #34d399; }
+.rstat-failed { color: #f87171; }
+.rstat-total  { color: #6366f1; }
+
+.rstat-label {
+  font-size: .7rem; font-weight: 600;
+  color: #64748b; text-transform: uppercase; letter-spacing: 1px;
+}
+
+/* Question results list */
+.results-list {
+  text-align: left;
+  margin-bottom: 1.75rem;
+  border: 1px solid rgba(99,102,241,.12);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.ritem {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: .75rem 1rem;
+  border-bottom: 1px solid rgba(99,102,241,.08);
+  transition: background .2s;
+}
+.ritem:last-child { border-bottom: none; }
+.ritem:hover { background: rgba(99,102,241,.04); }
+
+.ritem-left {
+  display: flex; align-items: center; gap: .65rem;
+}
+
+.ritem-num {
+  font-size: .72rem; font-weight: 700;
+  color: #6366f1; background: rgba(99,102,241,.1);
+  padding: .2rem .5rem; border-radius: 6px;
+  letter-spacing: .5px;
+}
+
+.ritem-title {
+  font-size: .85rem; font-weight: 600; color: #cbd5e1;
+}
+
+.ritem-right {
+  display: flex; align-items: center; gap: .75rem;
+}
+
+.ritem-score {
+  font-size: .8rem; font-weight: 600; color: #94a3b8;
+  font-family: 'Fira Code', monospace;
+}
+
+.ritem-badge {
+  font-size: .68rem; font-weight: 700;
+  padding: .2rem .55rem; border-radius: 100px;
+  text-transform: uppercase; letter-spacing: .5px;
+}
+
+.rbadge-pass {
+  background: rgba(52,211,153,.1); color: #34d399;
+  border: 1px solid rgba(52,211,153,.25);
+}
+
+.rbadge-fail {
+  background: rgba(248,113,113,.1); color: #f87171;
+  border: 1px solid rgba(248,113,113,.25);
+}
+
+/* Action buttons */
+.results-actions {
+  display: flex; justify-content: center; gap: 1rem;
+}
+
+.btn-dashboard {
+  display: inline-flex; align-items: center; gap: .45rem;
+  background: linear-gradient(135deg, #6366f1, #4f46e5);
+  color: #fff; border: none;
+  padding: .65rem 1.4rem; border-radius: 12px;
+  font-size: .85rem; font-weight: 700;
+  cursor: pointer; font-family: inherit;
+  transition: all .25s;
+  box-shadow: 0 0 20px rgba(99,102,241,.3);
+}
+.btn-dashboard:hover {
+  box-shadow: 0 0 35px rgba(99,102,241,.5);
+  transform: translateY(-1px);
+}
+
+.btn-home {
+  display: inline-flex; align-items: center; gap: .45rem;
+  background: transparent;
+  border: 1px solid rgba(99,102,241,.3);
+  color: #94a3b8;
+  padding: .65rem 1.4rem; border-radius: 12px;
+  font-size: .85rem; font-weight: 600;
+  cursor: pointer; font-family: inherit;
+  transition: all .22s;
+}
+.btn-home:hover {
+  border-color: rgba(99,102,241,.55);
+  color: #e2e8f0;
+}

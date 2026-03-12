@@ -1,0 +1,221 @@
+<!-- communication-edit-form.html (Creator - Edit Test) -->
+
+<!-- Background -->
+<div class="home-bg">
+  <div class="grid-overlay"></div>
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+</div>
+
+<div class="edit-wrapper">
+
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="loading">
+    <div class="btn-spinner"></div>
+    <span>Loading test...</span>
+  </div>
+
+  <!-- Success Banner -->
+  <div class="success-banner" *ngIf="message">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+    </svg>
+    {{ message }}
+  </div>
+
+  <!-- Error Banner -->
+  <div class="error-banner" *ngIf="error">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="12" y1="8" x2="12" y2="12"/>
+      <line x1="12" y1="16" x2="12.01" y2="16"/>
+    </svg>
+    {{ error }}
+  </div>
+
+  <ng-container *ngIf="!loading">
+
+    <!-- ── Page Header ── -->
+    <div class="page-header">
+      <div class="header-left">
+        <div class="page-eyebrow">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          Creator Workspace
+        </div>
+        <h1 class="page-title">Edit Communication Test</h1>
+        <p class="page-sub">Update your test details and questions</p>
+      </div>
+
+      <!-- Step Progress -->
+      <div class="step-badge" *ngIf="totalQuestions > 0">
+        <div class="step-track">
+          <div class="step-fill" [style.width]="(currentStep / (totalQuestions + 1) * 100) + '%'"></div>
+        </div>
+        <span class="step-text">
+          {{ currentStep === 0 ? 'Test Details' : 'Question ' + currentStep + ' of ' + totalQuestions }}
+        </span>
+      </div>
+    </div>
+
+    <form [formGroup]="testForm">
+
+      <!-- ── Step 0: Test Details Card ── -->
+      <div class="section-card" *ngIf="currentStep === 0">
+        <div class="section-card-header">
+          <div class="section-icon icon-q">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+          </div>
+          <h2 class="section-title">Test Details</h2>
+        </div>
+
+        <div class="section-form">
+          <!-- Test Title -->
+          <div class="field-group">
+            <label class="field-label">Test Title</label>
+            <div class="input-wrapper">
+              <span class="input-icon">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/>
+                </svg>
+              </span>
+              <input formControlName="title" class="field-input" placeholder="e.g. HR Communication Round"/>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="field-group">
+            <label class="field-label">Description (Optional)</label>
+            <textarea formControlName="description" rows="3" class="field-textarea"
+              placeholder="e.g. This test evaluates communication skills"></textarea>
+          </div>
+
+          <!-- Next Button -->
+          <button type="button" class="btn-save" (click)="nextStep()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+            Continue to Questions
+          </button>
+        </div>
+      </div>
+
+      <!-- ── Step 1+: Question Cards ── -->
+      <ng-container formArrayName="questions">
+        <div class="section-card" *ngIf="currentStep > 0 && currentStep <= totalQuestions">
+          <div class="section-card-header">
+            <div class="section-icon icon-q">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+            </div>
+            <h2 class="section-title">Question {{ currentStep }}</h2>
+          </div>
+
+          <div class="section-form" [formGroupName]="currentStep - 1">
+            <!-- Question Text -->
+            <div class="field-group">
+              <label class="field-label">Question</label>
+              <textarea formControlName="questionText" rows="4" class="field-textarea"
+                placeholder="e.g. Tell me about yourself and your background."></textarea>
+            </div>
+
+            <!-- Time Limit -->
+            <div class="field-group">
+              <label class="field-label">Response Time Limit (seconds)</label>
+              <div class="input-wrapper">
+                <span class="input-icon">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                </span>
+                <input type="number" formControlName="timeLimit" class="field-input" placeholder="120"/>
+              </div>
+            </div>
+
+            <!-- Difficulty Level -->
+            <div class="field-group">
+              <label class="field-label">Difficulty Level</label>
+              <div class="input-wrapper">
+                <select formControlName="difficultyLevel" class="field-input">
+                  <option value="EASY">Easy</option>
+                  <option value="MEDIUM">Medium</option>
+                  <option value="HARD">Hard</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Category -->
+            <div class="field-group">
+              <label class="field-label">Category (Optional)</label>
+              <div class="input-wrapper">
+                <input formControlName="category" class="field-input"
+                  placeholder="e.g. Introduction, Behavioral, Situational"/>
+              </div>
+            </div>
+
+            <!-- Remove Question Button -->
+            <button type="button" class="btn-ghost btn-danger" (click)="removeQuestion(currentStep - 1)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+              </svg>
+              Remove Question
+            </button>
+          </div>
+        </div>
+      </ng-container>
+
+    </form>
+
+    <!-- ── Navigation Row ── -->
+    <div class="nav-row" *ngIf="currentStep > 0">
+      <button class="btn-ghost" (click)="previousStep()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5M12 5l-7 7 7 7"/>
+        </svg>
+        Previous
+      </button>
+
+      <div class="nav-actions">
+        <button type="button" class="btn-ghost" (click)="addQuestion()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+          </svg>
+          Add Question
+        </button>
+
+        <button *ngIf="currentStep < totalQuestions" class="btn-next" (click)="nextStep()">
+          Next Question
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </button>
+
+        <button *ngIf="currentStep === totalQuestions" class="btn-save"
+          (click)="saveTest()" [disabled]="testForm.invalid || saving || totalQuestions === 0">
+          <span class="btn-spinner" *ngIf="saving"></span>
+          <svg *ngIf="!saving" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          {{ saving ? 'Saving...' : 'Save Changes' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- ── Back Button (Step 0) ── -->
+    <div class="nav-row" *ngIf="currentStep === 0">
+      <button class="btn-ghost" (click)="goBack()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5M12 5l-7 7 7 7"/>
+        </svg>
+        Back to Dashboard
+      </button>
+    </div>
+
+  </ng-container>
+
+</div>

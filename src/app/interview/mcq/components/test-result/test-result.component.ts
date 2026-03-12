@@ -37,7 +37,7 @@ export class TestResultComponent {
   }
 
   goToTests(): void {
-    this.router.navigate(['home/aptitude/tests'], { replaceUrl: true });
+    this.router.navigate(['home/technical/tests'], { replaceUrl: true });
   }
 
   goToHome(): void {

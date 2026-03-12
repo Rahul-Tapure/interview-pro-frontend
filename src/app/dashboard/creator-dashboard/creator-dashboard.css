@@ -193,6 +193,7 @@
 .icon-apt  { background: rgba(34,211,238,.1);  color: #22d3ee; }
 .icon-tech { background: rgba(99,102,241,.12); color: #818cf8; }
 .icon-code { background: rgba(52,211,153,.1);  color: #34d399; }
+.icon-comm { background: rgba(167,139,250,.1); color: #a78bfa; }
 
 .section-title {
   font-size: 1.1rem;
@@ -304,6 +305,7 @@
 .chip-apt  { background: rgba(34,211,238,.1);  color: #22d3ee; border: 1px solid rgba(34,211,238,.2); }
 .chip-tech { background: rgba(99,102,241,.1);  color: #818cf8; border: 1px solid rgba(99,102,241,.2); }
 .chip-code { background: rgba(52,211,153,.1);  color: #34d399; border: 1px solid rgba(52,211,153,.2); }
+.chip-comm { background: rgba(167,139,250,.1); color: #a78bfa; border: 1px solid rgba(167,139,250,.2); }
 
 /* ─── Card Content ─────────────────────────────── */
 .card-title {
@@ -400,6 +402,13 @@
 }
 .publish-btn-code:hover {
   box-shadow: 0 0 32px rgba(52,211,153,.4);
+}
+.publish-btn-comm {
+  background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+  box-shadow: 0 0 18px rgba(167,139,250,.22);
+}
+.publish-btn-comm:hover {
+  box-shadow: 0 0 32px rgba(167,139,250,.4);
 }
 
 /* ─── Published Tag ────────────────────────────── */

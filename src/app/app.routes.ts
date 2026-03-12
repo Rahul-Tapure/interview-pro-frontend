@@ -90,7 +90,7 @@ export const routes: Routes = [
   canActivate: [authGuard],
   loadComponent: () =>
     import('./interview/communication/components/communication-test/CommunicationTestComponent')
-      .then(m => m.CommunicationStartTestComponent)
+      .then(m => m.CommunicationTestComponent)
 }
 ,
 {
@@ -168,6 +168,23 @@ export const routes: Routes = [
     import('./interview/coding/components/view-test/view-coding-test.component')
       .then(m => m.ViewCodingTestComponent)
 },
+
+/* ================= Communication test creation ================= */
+{
+  path: 'creator/communication/test/:testId',
+  canActivate: [authGuard],
+  loadComponent: () =>
+    import('./interview/communication/components/question-add/communication-question-add')
+      .then(m => m.CommunicationQuestionAddComponent)
+},
+{
+  path: 'creator/communication/:testId/view',
+  canActivate: [authGuard],
+  loadComponent: () =>
+    import('./interview/communication/components/edit-test/communication-edit-test')
+      .then(m => m.CommunicationEditTestComponent)
+},
+
 {
   path: 'coding/test/:testId',
   loadComponent: () =>

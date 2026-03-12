@@ -1,5 +1,5 @@
 // view-coding-test.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { CodingCreatorService } from '../../service/coding-creator.service';
@@ -19,7 +19,8 @@ export class ViewCodingTestComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private service: CodingCreatorService
+    private service: CodingCreatorService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -31,6 +32,7 @@ export class ViewCodingTestComponent implements OnInit {
     // Load test details
     this.service.getTestById(this.testId).subscribe(res => {
       this.test = res;
+      this.cdr.detectChanges();
     });
 
     // Load questions with test cases
@@ -40,6 +42,7 @@ export class ViewCodingTestComponent implements OnInit {
         (a: any, b: any) => a.questionIndex - b.questionIndex
       );
       this.loading = false;
+      this.cdr.detectChanges();
     });
   }
 }

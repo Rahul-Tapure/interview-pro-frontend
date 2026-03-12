@@ -1,5 +1,5 @@
 // resume-dashboard.component.ts
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -21,7 +21,7 @@ export class ResumeDashboardComponent {
   loading = false;
   error = '';
 
-  constructor(private http: HttpClient, private router: Router) {
+  constructor(private http: HttpClient, private router: Router, private cdr: ChangeDetectorRef) {
     this.loadHistory();
   }
 
@@ -36,6 +36,7 @@ export class ResumeDashboardComponent {
       .subscribe({
         next: (res: any) => {
           this.resumes = res;
+          this.cdr.detectChanges();
         },
         error: (err) => {
           console.error('Failed to load history:', err);

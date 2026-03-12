@@ -52,6 +52,11 @@
       <span class="pill-num">{{ (codingTests$ | async)?.length ?? 0 }}</span>
       <span class="pill-label">Coding Tests</span>
     </div>
+    <div class="stat-pill" style="--i:3">
+      <span class="pill-icon">🎙️</span>
+      <span class="pill-num">{{ (communicationTests$ | async)?.length ?? 0 }}</span>
+      <span class="pill-label">Communication Tests</span>
+    </div>
   </div>
 
   <!-- ═══════════════ APTITUDE ═══════════════ -->
@@ -282,6 +287,91 @@
           </button>
 
           <div class="published-tag" *ngIf="test.publicTest">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+            Live & Published
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </section>
+
+  <!-- ═══════════════ COMMUNICATION ═══════════════ -->
+  <section class="test-section">
+    <div class="section-header">
+      <div class="section-label-wrap">
+        <div class="section-icon icon-comm">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+        </div>
+        <div>
+          <h3 class="section-title">Communication Tests</h3>
+          <p class="section-sub">HR interview & soft skills assessments</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading-row" *ngIf="!(communicationTests$ | async)">
+      <div class="loading-dot"></div>
+      <div class="loading-dot"></div>
+      <div class="loading-dot"></div>
+      <span>Loading tests...</span>
+    </div>
+
+    <ng-container *ngIf="communicationTests$ | async as tests">
+      <!-- Empty -->
+      <div class="section-empty" *ngIf="tests.length === 0">
+        <span>📭</span>
+        <p>No communication tests yet. Create your first one!</p>
+      </div>
+
+      <!-- Grid -->
+      <div class="tests-grid" *ngIf="tests.length > 0">
+        <div class="test-card" *ngFor="let test of tests; let i = index" [style]="'--i:' + i">
+          <div class="card-glow"></div>
+
+          <div class="card-top">
+            <span class="visibility-badge" [class.badge-public]="test.isActive" [class.badge-private]="!test.isActive">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path *ngIf="test.isActive" d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle *ngIf="test.isActive" cx="12" cy="12" r="3"/>
+                <rect *ngIf="!test.isActive" x="3" y="11" width="18" height="11" rx="2"/><path *ngIf="!test.isActive" d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+              {{ test.isActive ? 'Public' : 'Private' }}
+            </span>
+            <span class="type-chip chip-comm">Communication</span>
+          </div>
+
+          <h4 class="card-title">{{ test.title }}</h4>
+
+          <div class="card-meta">
+            <span class="meta-item">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+              {{ test.totalQuestions || test.questions?.length || 0 }} questions
+            </span>
+          </div>
+
+          <div class="card-actions">
+            <button class="action-btn btn-view" (click)="viewCommunication(test.id)">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              View
+            </button>
+            <button class="action-btn btn-edit" *ngIf="!test.isActive" (click)="editCommunication(test.id)">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              Edit
+            </button>
+            <button class="action-btn btn-delete" (click)="deleteCommunication(test.id)">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+              Delete
+            </button>
+          </div>
+
+          <button class="publish-btn publish-btn-comm" *ngIf="!test.isActive" (click)="publishCommunication(test.id)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
+            Publish Test
+          </button>
+
+          <div class="published-tag" *ngIf="test.isActive">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
             Live & Published
           </div>

@@ -21,72 +21,163 @@
       <h1 class="page-title">Create Communication Test</h1>
       <p class="page-sub">Build an HR interview assessment with communication and soft skills questions</p>
     </div>
+
+    <!-- Step Progress -->
+    <div class="step-badge" *ngIf="totalQuestions > 0">
+      <div class="step-track">
+        <div class="step-fill" [style.width]="(currentStep / (totalQuestions + 1) * 100) + '%'"></div>
+      </div>
+      <span class="step-text">
+        {{ currentStep === 0 ? 'Test Details' : 'Question ' + currentStep + ' of ' + totalQuestions }}
+      </span>
+    </div>
   </div>
 
-  <!-- ── Test Details Card ── -->
-  <div class="section-card">
-    <div class="section-card-header">
-      <div class="section-icon icon-test">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-          <polyline points="14 2 14 8 20 8"/>
-        </svg>
+  <form [formGroup]="testForm">
+
+    <!-- ── Step 0: Test Details Card ── -->
+    <div class="section-card" *ngIf="currentStep === 0">
+      <div class="section-card-header">
+        <div class="section-icon icon-test">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+          </svg>
+        </div>
+        <h2 class="section-title">Test Details</h2>
       </div>
-      <h2 class="section-title">Test Details</h2>
+
+      <div class="section-form">
+        <!-- Test Title -->
+        <div class="field-group">
+          <label class="field-label">Test Title</label>
+          <div class="input-wrapper">
+            <span class="input-icon">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/>
+              </svg>
+            </span>
+            <input formControlName="title" class="field-input" placeholder="e.g. HR Communication Round - Fresher"/>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="field-group">
+          <label class="field-label">Description (Optional)</label>
+          <textarea formControlName="description" rows="3" class="field-textarea"
+            placeholder="e.g. This test evaluates communication skills for entry-level candidates"></textarea>
+        </div>
+
+        <!-- Next Button -->
+        <button type="button" class="btn-create" (click)="nextStep()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+          Continue &amp; Add Questions
+        </button>
+      </div>
     </div>
 
-    <form [formGroup]="testForm" class="section-form">
-
-      <!-- Test Title -->
-      <div class="field-group">
-        <label class="field-label">Test Title</label>
-        <div class="input-wrapper">
-          <span class="input-icon">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/>
+    <!-- ── Step 1+: Question Cards ── -->
+    <ng-container formArrayName="questions">
+      <div class="section-card" *ngIf="currentStep > 0 && currentStep <= totalQuestions">
+        <div class="section-card-header">
+          <div class="section-icon icon-q">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
             </svg>
-          </span>
-          <input formControlName="title" class="field-input" placeholder="e.g. HR Communication Round - Fresher"/>
+          </div>
+          <h2 class="section-title">Question {{ currentStep }}</h2>
+        </div>
+
+        <div class="section-form" [formGroupName]="currentStep - 1">
+          <!-- Question Text -->
+          <div class="field-group">
+            <label class="field-label">Question</label>
+            <textarea formControlName="questionText" rows="4" class="field-textarea"
+              placeholder="e.g. Tell me about yourself and your background."></textarea>
+          </div>
+
+          <!-- Time Limit -->
+          <div class="field-group">
+            <label class="field-label">Response Time Limit (seconds)</label>
+            <div class="input-wrapper">
+              <span class="input-icon">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                </svg>
+              </span>
+              <input type="number" formControlName="timeLimit" class="field-input" placeholder="120"/>
+            </div>
+          </div>
+
+          <!-- Difficulty Level -->
+          <div class="field-group">
+            <label class="field-label">Difficulty Level</label>
+            <div class="input-wrapper">
+              <select formControlName="difficultyLevel" class="field-input">
+                <option value="EASY">Easy</option>
+                <option value="MEDIUM">Medium</option>
+                <option value="HARD">Hard</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Category -->
+          <div class="field-group">
+            <label class="field-label">Category (Optional)</label>
+            <div class="input-wrapper">
+              <input formControlName="category" class="field-input"
+                placeholder="e.g. Introduction, Behavioral, Situational"/>
+            </div>
+          </div>
+
+          <!-- Remove Question Button -->
+          <button type="button" class="btn-ghost btn-danger" (click)="removeQuestion(currentStep - 1)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+            </svg>
+            Remove Question
+          </button>
         </div>
       </div>
+    </ng-container>
 
-      <!-- Duration -->
-      <div class="field-group">
-        <label class="field-label">Duration (minutes)</label>
-        <div class="input-wrapper">
-          <span class="input-icon">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-            </svg>
-          </span>
-          <input type="number" formControlName="durationMinutes" class="field-input" placeholder="30"/>
-        </div>
-      </div>
+  </form>
 
-      <!-- Total Questions -->
-      <div class="field-group">
-        <label class="field-label">Number of Questions</label>
-        <div class="input-wrapper">
-          <span class="input-icon">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M9 11l3 3L22 4"/>
-              <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
-            </svg>
-          </span>
-          <input type="number" formControlName="totalQuestions" class="field-input" placeholder="10"/>
-        </div>
-      </div>
+  <!-- ── Navigation Row ── -->
+  <div class="nav-row" *ngIf="currentStep > 0">
+    <button class="btn-ghost" (click)="previousStep()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M19 12H5M12 5l-7 7 7 7"/>
+      </svg>
+      Previous
+    </button>
 
-      <!-- Create Button -->
-      <button type="button" class="btn-create" (click)="createTest()" [disabled]="testForm.invalid || loading">
+    <div class="nav-actions">
+      <button type="button" class="btn-ghost" (click)="addQuestion()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Add Question
+      </button>
+
+      <button *ngIf="currentStep < totalQuestions" class="btn-next" (click)="nextStep()">
+        Next Question
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </button>
+
+      <button *ngIf="currentStep === totalQuestions" class="btn-create"
+        (click)="createTest()" [disabled]="testForm.invalid || loading || totalQuestions === 0">
         <span class="btn-spinner" *ngIf="loading"></span>
         <svg *ngIf="!loading" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="20 6 9 17 4 12"/>
         </svg>
-        {{ loading ? 'Creating Test...' : 'Create Test & Add Questions' }}
+        {{ loading ? 'Creating Test...' : 'Create & Publish Test' }}
       </button>
-
-    </form>
+    </div>
   </div>
 
   <!-- Error Banner -->

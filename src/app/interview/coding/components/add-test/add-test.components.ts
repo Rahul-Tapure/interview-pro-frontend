@@ -1,6 +1,6 @@
 // add-test.ts (or coding-test-builder.ts)
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -39,7 +39,8 @@ export class AddTestComponent implements OnInit {
     private fb: FormBuilder,
     private route: ActivatedRoute,
     private router: Router,
-    private service: CodingCreatorService
+    private service: CodingCreatorService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -50,6 +51,7 @@ export class AddTestComponent implements OnInit {
     // Load test to get total questions
     this.service.getTestById(this.testId).subscribe(test => {
       this.totalQuestions = test.totalQuestions;
+      this.cdr.detectChanges();
     });
 
     // Initialize forms
@@ -119,6 +121,7 @@ export class AddTestComponent implements OnInit {
 
         // Load test cases
         this.loadTestCases();
+        this.cdr.detectChanges();
       });
   }
 
@@ -158,6 +161,7 @@ export class AddTestComponent implements OnInit {
     this.service.getTestCases(this.questionId)
       .subscribe((res: any) => {
         this.testCases = res;
+        this.cdr.detectChanges();
       });
   }
 

@@ -1,20 +1,20 @@
-// communication-start-test.ts
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, OnDestroy, NgZone, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
+import { CommunicationService } from '../../services/communication.service';
 
 @Component({
-  selector: 'app-communication-start-test',
+  selector: 'app-communication-test',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './communication-test.component.html',
   styleUrls: ['./communication-test.component.css']
 })
-export class CommunicationStartTestComponent implements OnInit, OnDestroy {
+export class CommunicationTestComponent implements OnInit, OnDestroy {
 
   submissionId!: number;
   testId!: number;
+  testTitle = '';
 
   questions: any[] = [];
   currentIndex = 0;
@@ -26,6 +26,7 @@ export class CommunicationStartTestComponent implements OnInit, OnDestroy {
   recording = false;
   recorded = false;
   submitting = false;
+  completed = false;
 
   timer = 120;
   interval: any;
@@ -33,172 +34,173 @@ export class CommunicationStartTestComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private http: HttpClient
+    private communicationService: CommunicationService,
+    private ngZone: NgZone,
+    private cdr: ChangeDetectorRef
   ) {}
 
-  ngOnInit(): void {
+  goToDashboard() {
+    this.router.navigate(['/dashboard/user']);
+  }
+
+  goToHome() {
+    this.router.navigate(['/']);
+  }
+
+  ngOnInit() {
     this.testId = Number(this.route.snapshot.paramMap.get('id'));
-    this.startSubmission();
+
+    this.communicationService.startSubmission({
+      testId: this.testId
+    })
+    .subscribe({
+      next: (res: any) => {
+        console.log('Submission response:', res);
+        this.submissionId = res.id || res.submissionId;
+        this.loadTest();
+        this.cdr.detectChanges();
+      },
+      error: err => console.error("Submission start failed", err)
+    });
   }
 
   ngOnDestroy(): void {
-    // Clean up timer and media stream
     clearInterval(this.interval);
     if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
       this.mediaRecorder.stop();
     }
   }
 
-  /** Start test submission */
-  startSubmission(): void {
-    this.http.post('http://localhost:8080/interviewpro/communication/start', {
-      testId: this.testId
-      // userId will be read from security context in backend
-    }).subscribe({
-      next: (res: any) => {
-        this.submissionId = res.id || res.submissionId;
-        this.loadTest();
-      },
-      error: (err: any) => {
-        console.error('Submission start failed:', err);
-        alert('Failed to start test. Please try again.');
-        this.router.navigate(['/communication/tests']);
-      }
-    });
-  }
-
-  /** Load test questions */
-  loadTest(): void {
-    this.http.get(`http://localhost:8080/interviewpro/communication/test/${this.testId}`)
+  loadTest() {
+    this.communicationService.getTest(this.testId)
       .subscribe({
-        next: (res: any) => {
+        next: res => {
+          console.log('Test loaded:', res);
+          this.testTitle = res.title || 'Communication Test';
           this.questions = res.questions || [];
-          // Set timer from first question's time limit
           if (this.questions.length > 0) {
             this.timer = this.questions[0].timeLimit || 120;
           }
+          this.cdr.detectChanges();
         },
-        error: (err: any) => {
-          console.error('Test load failed:', err);
-          alert('Failed to load test questions.');
+        error: err => console.error("Test load failed", err)
+      });
+  }
+
+  get formattedTime(): string {
+    const m = Math.floor(this.timer / 60);
+    const s = this.timer % 60;
+    return `${m < 10 ? '0' + m : m}:${s < 10 ? '0' + s : s}`;
+  }
+
+  async startRecording() {
+    if (this.recorded) return;
+
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+    this.mediaRecorder = new MediaRecorder(stream);
+    this.audioChunks = [];
+
+    this.mediaRecorder.ondataavailable = (e) => {
+      this.audioChunks.push(e.data);
+    };
+
+    this.mediaRecorder.onstop = () => {
+      this.ngZone.run(() => {
+        this.audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
+        this.recorded = true;
+        console.log('Recording stopped, blob size:', this.audioBlob.size);
+        this.cdr.detectChanges();
+      });
+      stream.getTracks().forEach(track => track.stop());
+    };
+
+    this.mediaRecorder.start();
+    this.recording = true;
+    this.startTimer();
+  }
+
+  stopRecording() {
+    if (this.mediaRecorder) {
+      this.mediaRecorder.stop();
+    }
+    this.ngZone.run(() => {
+      this.recording = false;
+      clearInterval(this.interval);
+      this.cdr.detectChanges();
+    });
+  }
+
+  startTimer() {
+    clearInterval(this.interval);
+    this.interval = setInterval(() => {
+      this.ngZone.run(() => {
+        this.timer--;
+        if (this.timer <= 0) {
+          this.stopRecording();
+        }
+        this.cdr.detectChanges();
+      });
+    }, 1000);
+  }
+
+  submitAnswer() {
+    const question = this.questions[this.currentIndex];
+    this.submitting = true;
+
+    this.communicationService
+      .uploadAudio(this.audioBlob)
+      .subscribe({
+        next: (res) => {
+          console.log('Upload response:', res);
+          const payload = {
+            submissionId: this.submissionId,
+            questionId: question.id,
+            audioUrl: res.audioUrl,
+            assemblyaiJobId: res.jobId
+          };
+
+          this.communicationService
+            .submitAnswer(payload)
+            .subscribe({
+              next: (answerRes) => {
+                console.log('Answer submitted:', answerRes);
+                this.submitting = false;
+                this.nextQuestion();
+                this.cdr.detectChanges();
+              },
+              error: (err) => {
+                this.submitting = false;
+                console.error('Answer submission failed', err);
+              }
+            });
+        },
+        error: (err) => {
+          this.submitting = false;
+          console.error('Audio upload failed', err);
         }
       });
   }
 
-  /** Start audio recording */
-  async startRecording(): Promise<void> {
-    if (this.recorded) return;
-
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-      this.mediaRecorder = new MediaRecorder(stream);
-      this.audioChunks = [];
-
-      this.mediaRecorder.ondataavailable = (e) => {
-        this.audioChunks.push(e.data);
-      };
-
-      this.mediaRecorder.onstop = () => {
-        this.audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
-        this.recorded = true;
-
-        // Stop all tracks to release microphone
-        stream.getTracks().forEach(track => track.stop());
-      };
-
-      this.mediaRecorder.start();
-      this.recording = true;
-      this.startTimer();
-
-    } catch (err) {
-      console.error('Microphone access denied:', err);
-      alert('Microphone access is required. Please allow microphone permissions.');
-    }
-  }
-
-  /** Stop audio recording */
-  stopRecording(): void {
-    if (this.mediaRecorder && this.mediaRecorder.state === 'recording') {
-      this.mediaRecorder.stop();
-    }
-
-    this.recording = false;
-    clearInterval(this.interval);
-  }
-
-  /** Start countdown timer */
-  startTimer(): void {
-    clearInterval(this.interval);
-
-    this.interval = setInterval(() => {
-      this.timer--;
-
-      if (this.timer <= 0) {
-        this.stopRecording();
-      }
-    }, 1000);
-  }
-
-  /** Submit answer */
-  submitAnswer(): void {
-    if (!this.recorded || !this.submissionId) return;
-
-    const question = this.questions[this.currentIndex];
-    this.submitting = true;
-
-    // Upload audio first
-    this.uploadAudio(this.audioBlob).subscribe({
-      next: (uploadRes: any) => {
-        // Then submit answer with audio URL
-        const payload = {
-          submissionId: this.submissionId,
-          questionId: question.id,
-          audioUrl: uploadRes.audioUrl,
-          assemblyaiJobId: uploadRes.jobId || null
-        };
-
-        this.http.post('http://localhost:8080/interviewpro/communication/submit-answer', payload)
-          .subscribe({
-            next: () => {
-              this.submitting = false;
-              this.nextQuestion();
-            },
-            error: (err: any) => {
-              this.submitting = false;
-              console.error('Answer submission failed:', err);
-              alert('Failed to submit answer. Please try again.');
-            }
-          });
-      },
-      error: (err: any) => {
-        this.submitting = false;
-        console.error('Audio upload failed:', err);
-        alert('Failed to upload audio. Please try again.');
-      }
-    });
-  }
-
-  /** Upload audio blob to server */
-  uploadAudio(blob: Blob): any {
-    const formData = new FormData();
-    formData.append('audio', blob, 'answer.webm');
-
-    return this.http.post('http://localhost:8080/interviewpro/communication/upload-audio', formData);
-  }
-
-  /** Move to next question or finish test */
-  nextQuestion(): void {
+  nextQuestion() {
     this.currentIndex++;
 
     if (this.currentIndex >= this.questions.length) {
-      // Test completed
-      alert('✅ Communication round completed!');
-      this.router.navigate(['/communication/result', this.submissionId]);
+      this.communicationService.completeSubmission(this.submissionId).subscribe({
+        next: (res) => {
+          console.log('Submission completed:', res);
+          this.completed = true;
+          this.cdr.detectChanges();
+        },
+        error: (err) => {
+          console.error('Complete submission failed', err);
+          this.completed = true;
+          this.cdr.detectChanges();
+        }
+      });
       return;
     }
 
-    // Reset for next question
     this.recorded = false;
     this.recording = false;
     this.timer = this.questions[this.currentIndex].timeLimit || 120;

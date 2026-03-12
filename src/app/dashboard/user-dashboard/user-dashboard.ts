@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { Chart } from 'chart.js/auto';
 import { McqStudentService } from '../../interview/mcq/services/mcq-student.service';
 import { CodingStudentService } from '../../interview/coding/service/coding-student.service';
+import { CommunicationService } from '../../interview/communication/services/communication.service';
 
 @Component({
   standalone: true,
@@ -16,17 +17,21 @@ export class UserDashboardComponent implements OnInit {
 
   results: any[] = [];
   chart!: Chart;
-codingResults: any[] = [];
+  codingResults: any[] = [];
+  commSubmissions: any[] = [];
+  commLoading = true;
 
   constructor(
     private studentService: McqStudentService,
     private codingService: CodingStudentService,
+    private communicationService: CommunicationService,
     private router: Router,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
   this.loadAllResults();
+  this.loadCommResults();
 }
 loadAllResults(): void {
 
@@ -157,5 +162,34 @@ mergeResultsForDashboard(): void {
 
   takeTest(): void {
     this.router.navigate(['/tests']);
+  }
+
+  loadCommResults(): void {
+    this.commLoading = true;
+    this.communicationService.getCompletedSubmissions().subscribe({
+      next: (subs) => {
+        console.log('Comm submissions:', subs);
+        this.commSubmissions = subs;
+        this.commLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Failed to load comm results', err);
+        this.commLoading = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  getCommStatusClass(status: string): string {
+    switch (status) {
+      case 'COMPLETED': return 'badge-pass';
+      case 'IN_PROGRESS': return 'badge-progress';
+      default: return 'badge-fail';
+    }
+  }
+
+  viewCommFeedback(submission: any): void {
+    this.router.navigate(['/home/communication/result', submission.id]);
   }
 }

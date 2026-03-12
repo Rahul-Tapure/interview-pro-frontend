@@ -17,8 +17,8 @@
   <!-- Cards Grid -->
   <div class="cards-grid">
 
-    <!-- Communication Round (Coming Soon) -->
-    <div class="round-card card-locked" style="--i:0">
+ <!-- Communication Round (Coming Soon) -->
+    <div class="round-card card-communication" style="--i:1">
       <div class="card-glow"></div>
       <div class="card-top">
         <div class="card-icon icon-comm">
@@ -26,7 +26,7 @@
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
           </svg>
         </div>
-        <div class="card-badge badge-soon">Coming Soon</div>
+        <div class="card-badge badge-active">Available</div>
       </div>
       <h2 class="card-title">Communication Round</h2>
       <p class="card-desc">HR interviews, soft skills & verbal communication practice sessions to build your confidence.</p>
@@ -34,10 +34,10 @@
         <span class="meta-tag">🎤 HR Interview</span>
         <span class="meta-tag">🗣️ Soft Skills</span>
       </div>
-      <button disabled class="card-btn btn-disabled">
-        <span>Unlock Soon</span>
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-      </button>
+      <a [routerLink]="['/home','communication','tests']" class="card-btn btn-primary">
+        <span>View Tests</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
     </div>
 
     <!-- Aptitude Round -->

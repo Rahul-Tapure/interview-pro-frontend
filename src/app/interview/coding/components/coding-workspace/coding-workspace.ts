@@ -1,12 +1,12 @@
-// coding-workspace.ts  –  replace the inline template with the full redesign
-// (keep templateUrl if you prefer a separate file)
-import { Component } from '@angular/core';
+// coding-workspace.ts
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { map, switchMap } from 'rxjs';
+import { map, switchMap, tap, catchError, of } from 'rxjs';
 
 import { CodingCreatorService } from '../../service/coding-creator.service';
+import { CodingStudentService } from '../../service/coding-student.service';
 import { CodingQuestion } from '../../model/coding-question.model';
 import { CodeEditorComponent } from '../code-editor/code-editor';
 
@@ -33,7 +33,68 @@ import { CodeEditorComponent } from '../code-editor/code-editor';
   </div>
 </div>
 
-<div class="workspace-layout" *ngIf="questions$ | async as questions">
+<!-- ══ RESULTS SCREEN ══ -->
+<div class="results-wrapper" *ngIf="completed">
+  <div class="results-card">
+    <div class="results-icon">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+        <polyline points="22 4 12 14.01 9 11.01"/>
+      </svg>
+    </div>
+    <h2 class="results-title">Test Completed!</h2>
+    <p class="results-sub">You've submitted all {{ questionResults.length }} question{{ questionResults.length !== 1 ? 's' : '' }}</p>
+
+    <div class="results-stats">
+      <div class="rstat">
+        <span class="rstat-num rstat-passed">{{ passedCount }}</span>
+        <span class="rstat-label">Passed</span>
+      </div>
+      <div class="rstat">
+        <span class="rstat-num rstat-failed">{{ failedCount }}</span>
+        <span class="rstat-label">Failed</span>
+      </div>
+      <div class="rstat">
+        <span class="rstat-num rstat-total">{{ questionResults.length }}</span>
+        <span class="rstat-label">Total</span>
+      </div>
+    </div>
+
+    <div class="results-list">
+      <div class="ritem" *ngFor="let qr of questionResults; let i = index">
+        <div class="ritem-left">
+          <span class="ritem-num">Q{{ i + 1 }}</span>
+          <span class="ritem-title">{{ qr.title }}</span>
+        </div>
+        <div class="ritem-right">
+          <span class="ritem-score">{{ qr.passed }}/{{ qr.total }}</span>
+          <span class="ritem-badge" [class.rbadge-pass]="qr.status === 'PASSED'" [class.rbadge-fail]="qr.status !== 'PASSED'">
+            {{ qr.status }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="results-actions">
+      <button class="btn-dashboard" (click)="goToDashboard()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/>
+          <rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>
+        </svg>
+        Dashboard
+      </button>
+      <button class="btn-home" (click)="goToHome()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        Home
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="workspace-layout" *ngIf="questions$ | async as questions" [class.hidden]="completed">
 
   <!-- ══ LEFT: Problem Panel ══ -->
   <div class="left-panel">
@@ -132,21 +193,52 @@ import { CodeEditorComponent } from '../code-editor/code-editor';
 export class CodingWorkspaceComponent {
 
   questions$;
+  questionsCache: CodingQuestion[] = [];
   currentIndex = 0;
   output = '';
-  currentLanguageId = 62; // Track the selected language ID
+  currentLanguageId = 62;
+  completed = false;
+  attemptId = '';
+
+  questionResults: { title: string; status: string; passed: number; total: number }[] = [];
 
   private codeStore: Record<number, string> = {};
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
     private service: CodingCreatorService,
-    private http: HttpClient
+    private studentService: CodingStudentService,
+    private http: HttpClient,
+    private cdr: ChangeDetectorRef
   ) {
     this.questions$ = this.route.paramMap.pipe(
       map(params => Number(params.get('id'))),
-      switchMap(testId => this.service.getQuestionsByTest(testId))
+      switchMap(testId =>
+        this.studentService.startAttempt(testId).pipe(
+          tap(res => {
+            this.attemptId = res.attemptId;
+            console.log('Attempt started:', this.attemptId);
+          }),
+          catchError(err => {
+            console.error('Failed to start attempt, using local ID', err);
+            this.attemptId = crypto.randomUUID();
+            return of(null);
+          }),
+          switchMap(() => this.service.getQuestionsByTest(testId))
+        )
+      )
     );
+
+    this.questions$.subscribe(q => this.questionsCache = q);
+  }
+
+  get passedCount(): number {
+    return this.questionResults.filter(r => r.status === 'PASSED').length;
+  }
+
+  get failedCount(): number {
+    return this.questionResults.filter(r => r.status !== 'PASSED').length;
   }
 
   next(total: number) {
@@ -155,6 +247,14 @@ export class CodingWorkspaceComponent {
 
   prev() {
     if (this.currentIndex > 0) this.currentIndex--;
+  }
+
+  goToDashboard() {
+    this.router.navigate(['/dashboard/user']);
+  }
+
+  goToHome() {
+    this.router.navigate(['/']);
   }
 
   getInitialCode(question: CodingQuestion): string {
@@ -168,20 +268,21 @@ export class CodingWorkspaceComponent {
     this.codeStore[question.questionId] = code;
     const input = question.testCases?.find((tc: { sample: any }) => tc.sample)?.input || '';
     this.output = 'Running...';
-    this.http.post<any>('http://localhost:8080/interviewpro/coding/run', {
+    this.http.post<any>('/interviewpro/coding/run', {
       sourceCode: code, 
-      languageId: this.currentLanguageId, // Use dynamic language ID
+      languageId: this.currentLanguageId,
       input
-    }).subscribe({
+    }, { withCredentials: true }).subscribe({
       next: res  => { 
-        // Send full JSON response to console for rich display
         this.output = JSON.stringify(res, null, 2);
+        this.cdr.detectChanges();
       },
       error: ()  => { 
         this.output = JSON.stringify({
           status: { id: 0, description: 'Backend Error' },
           message: 'Failed to connect to execution server'
         }, null, 2);
+        this.cdr.detectChanges();
       }
     });
   }
@@ -189,16 +290,38 @@ export class CodingWorkspaceComponent {
   onSubmit(code: string, question: CodingQuestion) {
     this.codeStore[question.questionId] = code;
     this.output = 'Submitting...';
-    this.http.post<any>('http://localhost:8080/interviewpro/coding/submit', {
+    this.http.post<any>('/interviewpro/coding/submit', {
       questionId: question.questionId, 
       sourceCode: code, 
-      languageId: this.currentLanguageId
+      languageId: this.currentLanguageId,
+      attemptId: this.attemptId
     }, {
-      withCredentials: true // ✅ Send authentication cookies
+      withCredentials: true
     }).subscribe({
       next: res  => { 
-        // Send full JSON response to console for rich display
         this.output = JSON.stringify(res, null, 2);
+
+        this.questionResults.push({
+          title: question.title,
+          status: res.status || 'SUBMITTED',
+          passed: res.passed || 0,
+          total: res.total || 0
+        });
+
+        if (this.currentIndex < this.questionsCache.length - 1) {
+          setTimeout(() => {
+            this.currentIndex++;
+            this.output = '';
+            this.cdr.detectChanges();
+          }, 1500);
+        } else {
+          setTimeout(() => {
+            this.completed = true;
+            this.cdr.detectChanges();
+          }, 1500);
+        }
+
+        this.cdr.detectChanges();
       },
       error: (err)  => { 
         console.error('Submit error:', err);
@@ -208,6 +331,7 @@ export class CodingWorkspaceComponent {
             ? 'Authentication required. Please log in.' 
             : err.error?.message || 'Failed to submit to server'
         }, null, 2);
+        this.cdr.detectChanges();
       }
     });
   }

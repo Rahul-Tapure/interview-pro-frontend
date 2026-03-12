@@ -1,4 +1,4 @@
-<!-- communication-edit-test.html (Creator) -->
+<!-- communication-edit-test.html (Creator - View Test) -->
 
 <!-- Background -->
 <div class="home-bg">
@@ -9,110 +9,13 @@
 
 <div class="edit-wrapper">
 
-  <!-- ── Page Header ── -->
-  <div class="page-header">
-    <div class="header-left">
-      <div class="page-eyebrow">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-        </svg>
-        Creator Workspace
-      </div>
-      <h1 class="page-title">Communication Test Builder</h1>
-      <p class="page-sub">{{ test?.title }}</p>
-    </div>
-
-    <!-- Step Progress -->
-    <div class="step-badge">
-      <div class="step-track">
-        <div class="step-fill" [style.width]="(step / totalQuestions * 100) + '%'"></div>
-      </div>
-      <span class="step-text">Question {{ step }} of {{ totalQuestions }}</span>
-    </div>
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="loading">
+    <div class="btn-spinner"></div>
+    <span>Loading test...</span>
   </div>
 
-  <!-- ── Question Form Card ── -->
-  <div class="section-card">
-    <div class="section-card-header">
-      <div class="section-icon icon-q">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
-        </svg>
-      </div>
-      <h2 class="section-title">Question {{ step }}</h2>
-    </div>
-
-    <form [formGroup]="questionForm" class="section-form">
-
-      <!-- Question Text -->
-      <div class="field-group">
-        <label class="field-label">Question</label>
-        <textarea
-          formControlName="questionText"
-          rows="4"
-          class="field-textarea"
-          placeholder="e.g. Tell me about yourself and your background."></textarea>
-      </div>
-
-      <!-- Expected Answer Points (Optional Guide for Evaluator) -->
-      <div class="field-group">
-        <label class="field-label">
-          Key Points to Cover (Optional Guide)
-          <span class="field-hint">Help evaluators know what to look for in responses</span>
-        </label>
-        <textarea
-          formControlName="expectedPoints"
-          rows="3"
-          class="field-textarea"
-          placeholder="e.g. Should mention: education, relevant experience, key skills, career goals"></textarea>
-      </div>
-
-      <!-- Duration for this question -->
-      <div class="field-group">
-        <label class="field-label">Response Time Limit (seconds)</label>
-        <div class="input-wrapper">
-          <span class="input-icon">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-            </svg>
-          </span>
-          <input type="number" formControlName="timeLimit" class="field-input" placeholder="120"/>
-        </div>
-      </div>
-
-      <!-- Save Button -->
-      <button type="button" class="btn-save" (click)="saveQuestion()" [disabled]="questionForm.invalid || loading">
-        <span class="btn-spinner" *ngIf="loading"></span>
-        <svg *ngIf="!loading" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
-          <polyline points="17 21 17 13 7 13 7 21"/>
-          <polyline points="7 3 7 8 15 8"/>
-        </svg>
-        {{ questionId ? 'Update Question' : 'Save Question' }}
-      </button>
-
-    </form>
-  </div>
-
-  <!-- ── Navigation Row ── -->
-  <div class="nav-row">
-    <button class="btn-ghost" *ngIf="step > 1" (click)="previousStep()">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M19 12H5M12 5l-7 7 7 7"/>
-      </svg>
-      Previous
-    </button>
-    <div class="nav-spacer" *ngIf="step <= 1"></div>
-
-    <button class="btn-next" (click)="nextStep()">
-      {{ step === totalQuestions ? 'Finish & Publish' : 'Next Question' }}
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M5 12h14M12 5l7 7-7 7"/>
-      </svg>
-    </button>
-  </div>
-
-  <!-- Error Banner -->
+  <!-- Error State -->
   <div class="error-banner" *ngIf="error">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
       <circle cx="12" cy="12" r="10"/>
@@ -121,5 +24,53 @@
     </svg>
     {{ error }}
   </div>
+
+  <ng-container *ngIf="test && !loading">
+
+    <!-- ── Page Header ── -->
+    <div class="page-header">
+      <div class="header-left">
+        <div class="page-eyebrow">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+          </svg>
+          Creator Workspace
+        </div>
+        <h1 class="page-title">{{ test.title }}</h1>
+        <p class="page-sub">{{ test.description || 'No description' }} · {{ test.totalQuestions }} questions</p>
+      </div>
+    </div>
+
+    <!-- ── Questions List ── -->
+    <div class="section-card" *ngFor="let q of test.questions; let i = index">
+      <div class="section-card-header">
+        <div class="section-icon icon-q">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </div>
+        <h2 class="section-title">Question {{ i + 1 }}</h2>
+        <div class="question-meta">
+          <span class="meta-badge" *ngIf="q.difficultyLevel">{{ q.difficultyLevel }}</span>
+          <span class="meta-badge" *ngIf="q.category">{{ q.category }}</span>
+          <span class="meta-badge">{{ q.timeLimit }}s</span>
+        </div>
+      </div>
+      <div class="question-body">
+        <p class="question-text">{{ q.questionText }}</p>
+      </div>
+    </div>
+
+    <!-- ── Back Button ── -->
+    <div class="nav-row">
+      <button class="btn-ghost" (click)="goBack()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5M12 5l-7 7 7 7"/>
+        </svg>
+        Back to Dashboard
+      </button>
+    </div>
+
+  </ng-container>
 
 </div>

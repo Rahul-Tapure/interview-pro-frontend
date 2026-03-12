@@ -220,6 +220,7 @@
 .chip-aptitude  { background: rgba(34,211,238,.1);  color: #22d3ee; }
 .chip-technical { background: rgba(99,102,241,.12); color: #818cf8; }
 .chip-coding    { background: rgba(52,211,153,.1);  color: #34d399; }
+.chip-communication { background: rgba(167,139,250,.1); color: #a78bfa; }
 .preview-title {
   font-size: .88rem; font-weight: 600; color: #e2e8f0;
 }

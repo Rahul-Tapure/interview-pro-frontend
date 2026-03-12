@@ -17,7 +17,7 @@
   </div>
 </div>
 
-<div class="test-wrapper" *ngIf="questions.length">
+<div class="test-wrapper" *ngIf="questions.length && !completed">
 
   <!-- ── Header Card ── -->
   <div class="test-header">
@@ -26,7 +26,7 @@
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
         </svg>
-        Communication Round
+        {{ testTitle }}
       </div>
       <div class="test-progress">
         Question {{ currentIndex + 1 }} <span class="progress-sep">/</span> {{ questions.length }}
@@ -40,7 +40,7 @@
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
       </svg>
-      {{ timer }}s
+      {{ formattedTime }}
     </div>
   </div>
 
@@ -121,4 +121,32 @@
     <div class="progress-fill" [style.width]="((currentIndex + 1) / questions.length * 100) + '%'"></div>
   </div>
 
+</div>
+
+<!-- ── Completed State ── -->
+<div class="completed-wrapper" *ngIf="completed">
+  <div class="completed-card">
+    <div class="completed-icon">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+        <polyline points="22 4 12 14.01 9 11.01"/>
+      </svg>
+    </div>
+    <h2 class="completed-title">Communication Round Complete!</h2>
+    <p class="completed-text">All {{ questions.length }} questions answered. Your responses are being processed.</p>
+    <div class="completed-actions">
+      <button class="btn-dashboard" (click)="goToDashboard()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>
+        </svg>
+        Go to Dashboard
+      </button>
+      <button class="btn-home" (click)="goToHome()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        Go to Home
+      </button>
+    </div>
+  </div>
 </div>

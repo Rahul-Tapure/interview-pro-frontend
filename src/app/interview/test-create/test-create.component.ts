@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 
 import { McqCreatorService } from '../mcq/services/mcq-creator.service';
 import { CodingCreatorService } from '../coding/service/coding-creator.service';
+import { CommunicationService } from '../communication/services/communication.service';
 
 @Component({
   standalone: true,
@@ -42,12 +43,19 @@ export class TestCreateComponent implements OnInit {
       icon: '⚡',
       desc: 'Algorithmic challenges with IDE',
     },
+    {
+      value: 'COMMUNICATION',
+      label: 'Communication',
+      icon: '🎙️',
+      desc: 'HR interview & soft skills',
+    },
   ];
 
   constructor(
     private fb: FormBuilder,
     private mcqService: McqCreatorService,
     private codingService: CodingCreatorService,
+    private commService: CommunicationService,
     private router: Router
   ) {}
 
@@ -62,12 +70,33 @@ export class TestCreateComponent implements OnInit {
   }
 
   submit(): void {
+    const type = this.form.value.testType;
+
+    // ── Communication Test Flow (save test shell → add questions) ──
+    if (type === 'COMMUNICATION') {
+      if (this.form.invalid) {
+        this.form.markAllAsTouched();
+        return;
+      }
+      this.commService.createTest({
+        title: this.form.value.title,
+        description: this.form.value.description,
+        totalQuestions: this.form.value.totalQuestions,
+        durationMinutes: this.form.value.durationMinutes
+      }).subscribe((res: any) => {
+        const testId = res.id;
+        this.router.navigate(
+          ['/creator/communication/test', testId],
+          { queryParams: { step: 1 } }
+        );
+      });
+      return;
+    }
+
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
-
-    const type = this.form.value.testType;
 
     // ── Coding Test Flow ───────────────────────────
     if (type === 'CODING') {

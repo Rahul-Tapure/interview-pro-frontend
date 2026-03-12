@@ -317,3 +317,82 @@
   .controls { flex-direction: column; }
   .controls button { width: 100%; min-width: auto; }
 }
+
+/* ─── Completed State ──────────────────────────── */
+.completed-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+.completed-card {
+  text-align: center;
+  background: #111827;
+  border: 1px solid rgba(52,211,153,.25);
+  border-radius: 20px;
+  padding: 3rem 3.5rem;
+  animation: fadeSlideUp .6s ease both;
+}
+.completed-icon {
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: rgba(52,211,153,.12);
+  border: 2px solid rgba(52,211,153,.3);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 1.5rem;
+  color: #34d399;
+}
+.completed-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #e2e8f0;
+  margin: 0 0 .75rem;
+}
+.completed-text {
+  font-size: .9rem;
+  color: #94a3b8;
+  margin: 0;
+  line-height: 1.6;
+}
+.completed-actions {
+  display: flex;
+  gap: .75rem;
+  margin-top: 1.75rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.completed-actions button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  padding: .75rem 1.5rem;
+  border-radius: 12px;
+  font-size: .88rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  transition: all .25s;
+}
+.btn-dashboard {
+  background: linear-gradient(135deg, #a78bfa, #8b5cf6);
+  color: #fff;
+  box-shadow: 0 0 20px rgba(167,139,250,.3);
+}
+.btn-dashboard:hover {
+  box-shadow: 0 0 36px rgba(167,139,250,.52);
+  transform: translateY(-2px);
+}
+.btn-home {
+  background: #0d1120;
+  border: 1px solid rgba(167,139,250,.25) !important;
+  color: #94a3b8;
+}
+.btn-home:hover {
+  border-color: rgba(167,139,250,.45) !important;
+  color: #e2e8f0;
+  background: rgba(167,139,250,.07);
+  transform: translateY(-2px);
+}

@@ -9,6 +9,7 @@ import {
 } from 'rxjs';
 
 interface CurrentUser {
+  id: number;
   email: string;
   roles: string[];
 }
@@ -135,6 +136,10 @@ isAuthenticated() {
 
   isCreator(): boolean {
     return this.hasRole('ROLE_CREATOR');
+  }
+
+  getUserId(): number | null {
+    return this.currentUser?.id ?? null;
   }
 
 

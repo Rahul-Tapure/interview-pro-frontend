@@ -1,39 +1,43 @@
-// communication-create-test.ts
+// communication-edit-form.ts
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormArray, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommunicationService } from '../../services/communication.service';
-import { AuthService } from '../../../../services/auth.service';
 
 @Component({
-  selector: 'app-communication-create-test',
+  selector: 'app-communication-edit-form',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
-  templateUrl: './communication-create-test.html',
-  styleUrls: ['./communication-create-test.css']
+  templateUrl: './communication-edit-form.html',
+  styleUrls: ['./communication-edit-test.css']
 })
-export class CommunicationCreateTestComponent implements OnInit {
+export class CommunicationEditFormComponent implements OnInit {
 
+  testId!: number;
   testForm!: FormGroup;
-  loading = false;
+  loading = true;
+  saving = false;
   error = '';
-  currentStep = 0; // 0 = test details, 1+ = question steps
+  message = '';
+  currentStep = 0;
 
   constructor(
     private fb: FormBuilder,
+    private route: ActivatedRoute,
     private router: Router,
     private communicationService: CommunicationService,
-    private authService: AuthService,
     private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
+    this.testId = Number(this.route.snapshot.paramMap.get('testId'));
     this.testForm = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(3)]],
       description: [''],
       questions: this.fb.array([])
     });
+    this.loadTest();
   }
 
   get questions(): FormArray {
@@ -44,22 +48,50 @@ export class CommunicationCreateTestComponent implements OnInit {
     return this.questions.length;
   }
 
-  /** Add a new blank question to the form array */
+  loadTest(): void {
+    this.loading = true;
+    this.communicationService.getTest(this.testId).subscribe({
+      next: (res: any) => {
+        this.testForm.patchValue({
+          title: res.title,
+          description: res.description
+        });
+        this.questions.clear();
+        (res.questions || []).forEach((q: any, i: number) => {
+          this.questions.push(this.fb.group({
+            id: [q.id || null],
+            questionText: [q.questionText, [Validators.required, Validators.minLength(10)]],
+            timeLimit: [q.timeLimit || 120, [Validators.required, Validators.min(30), Validators.max(600)]],
+            questionOrder: [i + 1],
+            difficultyLevel: [q.difficultyLevel || 'MEDIUM'],
+            category: [q.category || '']
+          }));
+        });
+        this.loading = false;
+        this.cdr.detectChanges();
+      },
+      error: (err: any) => {
+        this.loading = false;
+        this.error = err.error?.message || 'Failed to load test.';
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
   addQuestion(): void {
     this.questions.push(this.fb.group({
+      id: [null],
       questionText: ['', [Validators.required, Validators.minLength(10)]],
       timeLimit: [120, [Validators.required, Validators.min(30), Validators.max(600)]],
       questionOrder: [this.questions.length + 1],
       difficultyLevel: ['MEDIUM'],
       category: ['']
     }));
-    this.currentStep = this.questions.length; // jump to new question
+    this.currentStep = this.questions.length;
   }
 
-  /** Remove a question by index */
   removeQuestion(index: number): void {
     this.questions.removeAt(index);
-    // Re-order remaining questions
     this.questions.controls.forEach((ctrl, i) => {
       ctrl.get('questionOrder')?.setValue(i + 1);
     });
@@ -68,14 +100,12 @@ export class CommunicationCreateTestComponent implements OnInit {
     }
   }
 
-  /** Navigate between steps */
   goToStep(step: number): void {
     this.currentStep = step;
   }
 
   nextStep(): void {
     if (this.currentStep === 0) {
-      // Validate test details before moving to questions
       const titleCtrl = this.testForm.get('title');
       if (titleCtrl?.invalid) {
         titleCtrl.markAsTouched();
@@ -99,37 +129,39 @@ export class CommunicationCreateTestComponent implements OnInit {
     }
   }
 
-  /** Submit the entire test with all questions */
-  createTest(): void {
+  saveTest(): void {
     if (this.testForm.invalid || this.questions.length === 0) {
       this.testForm.markAllAsTouched();
       this.error = 'Please fill all required fields and add at least one question';
       return;
     }
 
-    this.loading = true;
+    this.saving = true;
     this.error = '';
 
     const payload = {
       title: this.testForm.value.title,
       description: this.testForm.value.description,
-      createdBy: this.authService.getUserId(),
       questions: this.testForm.value.questions
     };
 
-    this.communicationService.createTest(payload)
+    this.communicationService.updateTest(this.testId, payload)
       .subscribe({
-        next: (res: any) => {
-          console.log('Test created:', res);
-          this.loading = false;
+        next: () => {
+          this.saving = false;
+          this.message = 'Test updated successfully!';
+          setTimeout(() => this.router.navigate(['/dashboard/creator']), 1500);
           this.cdr.detectChanges();
-          this.router.navigate(['/dashboard/creator']);
         },
         error: (err) => {
-          this.loading = false;
-          this.error = err.error?.message || 'Failed to create test. Please try again.';
+          this.saving = false;
+          this.error = err.error?.message || 'Failed to update test. Please try again.';
           this.cdr.detectChanges();
         }
       });
+  }
+
+  goBack(): void {
+    this.router.navigate(['/dashboard/creator']);
   }
 }

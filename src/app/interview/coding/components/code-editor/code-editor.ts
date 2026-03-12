@@ -2,7 +2,7 @@
 import {
   Component, ElementRef, EventEmitter, Input,
   OnDestroy, OnInit, Output, ViewChild,
-  OnChanges, SimpleChanges
+  OnChanges, SimpleChanges, ChangeDetectorRef
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -326,7 +326,7 @@ echo "Hello, InterviewPro!"`,
     'PHP': 'php',
   };
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.loadLanguagesFromJudge0();
@@ -336,18 +336,17 @@ echo "Hello, InterviewPro!"`,
 
   /** Load languages from backend (which fetches from Judge0) */
   loadLanguagesFromJudge0(): void {
-    this.http.get<Judge0Language[]>('http://localhost:8080/interviewpro/coding/languages')
+    this.http.get<Judge0Language[]>('/interviewpro/coding/languages', { withCredentials: true })
       .subscribe({
         next: (langs) => {
-          // Add Monaco mode mapping
           this.languages = langs.map(lang => ({
             ...lang,
             monaco: this.getMonacoMode(lang.name)
           }));
           this.loadingLanguages = false;
+          this.cdr.detectChanges();
         },
         error: () => {
-          // Fallback to hardcoded popular languages if backend fails
           this.languages = [
             { id: 62, name: 'Java', monaco: 'java' },
             { id: 63, name: 'JavaScript (Node.js)', monaco: 'javascript' },
@@ -358,6 +357,7 @@ echo "Hello, InterviewPro!"`,
             { id: 60, name: 'Go (1.13.5)', monaco: 'go' },
           ];
           this.loadingLanguages = false;
+          this.cdr.detectChanges();
           console.error('Failed to load languages from backend, using fallback');
         }
       });
@@ -393,6 +393,9 @@ echo "Hello, InterviewPro!"`,
       );
       this.editor.setModel(model);
       this.code = this.initialCode;
+    }
+    if (changes['consoleOutput']) {
+      this.cdr.detectChanges();
     }
   }
 
