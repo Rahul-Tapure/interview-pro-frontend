@@ -1,7 +1,13 @@
 {
   "/interviewpro": {
-    "target": "http://localhost:8080",
-    "secure": false,
+    "target": "https://interview-pro-backend-60ow.onrender.com",
+    "secure": true,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+  "/api": {
+    "target": "https://interview-pro-backend-60ow.onrender.com",
+    "secure": true,
     "changeOrigin": true,
     "logLevel": "debug"
   }
