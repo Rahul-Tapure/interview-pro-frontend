@@ -40,6 +40,7 @@
             class="field-input"
             placeholder="you@example.com"
             autocomplete="email"
+            (input)="clearErrorMessage()"
           />
         </div>
         <div class="field-errors" *ngIf="f['email'].touched && f['email'].invalid">
@@ -58,7 +59,7 @@
       <div class="field-group">
         <div class="label-row">
           <label class="field-label">Password</label>
-          <a href="#" class="forgot-link">Forgot password?</a>
+          <a routerLink="/forgot-password" class="forgot-link">Forgot password?</a>
         </div>
         <div class="input-wrapper" [class.input-error]="f['password'].touched && f['password'].invalid" [class.input-valid]="f['password'].touched && f['password'].valid">
           <span class="input-icon">
@@ -73,6 +74,7 @@
             class="field-input"
             placeholder="Enter your password"
             autocomplete="current-password"
+            (input)="clearErrorMessage()"
           />
           <button type="button" class="toggle-pass" (click)="showPassword = !showPassword">
             <svg *ngIf="!showPassword" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -102,7 +104,7 @@
       </div>
 
       <!-- Submit -->
-      <button type="submit" class="submit-btn" [disabled]="loading" [class.btn-loading]="loading">
+      <button type="submit" class="submit-btn" [disabled]="loading" [class.btn-loading]="loading" [attr.aria-busy]="loading">
         <span class="btn-spinner" *ngIf="loading"></span>
         <span *ngIf="!loading">Sign In</span>
         <span *ngIf="loading">Signing in...</span>

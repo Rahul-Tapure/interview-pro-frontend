@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { map, switchMap, tap, catchError, of } from 'rxjs';
+import { environment } from '../../../../../environments/environment';
 
 import { CodingCreatorService } from '../../service/coding-creator.service';
 import { CodingStudentService } from '../../service/coding-student.service';
@@ -268,7 +269,10 @@ export class CodingWorkspaceComponent {
     this.codeStore[question.questionId] = code;
     const input = question.testCases?.find((tc: { sample: any }) => tc.sample)?.input || '';
     this.output = 'Running...';
-    this.http.post<any>('/interviewpro/coding/run', {
+    const url = environment.production
+      ? `${environment.apiUrl}/interviewpro/coding/run`
+      : '/interviewpro/coding/run';
+    this.http.post<any>(url, {
       sourceCode: code, 
       languageId: this.currentLanguageId,
       input
@@ -290,7 +294,10 @@ export class CodingWorkspaceComponent {
   onSubmit(code: string, question: CodingQuestion) {
     this.codeStore[question.questionId] = code;
     this.output = 'Submitting...';
-    this.http.post<any>('/interviewpro/coding/submit', {
+    const url = environment.production
+      ? `${environment.apiUrl}/interviewpro/coding/submit`
+      : '/interviewpro/coding/submit';
+    this.http.post<any>(url, {
       questionId: question.questionId, 
       sourceCode: code, 
       languageId: this.currentLanguageId,

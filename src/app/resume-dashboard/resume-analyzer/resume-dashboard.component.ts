@@ -32,7 +32,7 @@ export class ResumeDashboardComponent {
 
   /** Load user's resume analysis history */
   loadHistory(): void {
-    this.http.get('http://localhost:8080/api/resume/my')
+    this.http.get('/api/resume/my')
       .subscribe({
         next: (res: any) => {
           this.resumes = res;
@@ -103,7 +103,7 @@ export class ResumeDashboardComponent {
     this.loading = true;
     this.error = '';
 
-    this.http.post('http://localhost:8080/api/resume/analyze', formData)
+    this.http.post('/api/resume/analyze', formData)
       .subscribe({
         next: (res: any) => {
           this.loading = false;

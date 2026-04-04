@@ -1,0 +1,124 @@
+<div class="comm-result-shell">
+  <div class="comm-result-header" *ngIf="showHeader">
+    <div>
+      <h3>{{ title }}</h3>
+      <p *ngIf="subtitle">{{ subtitle }}</p>
+      <p *ngIf="!subtitle && submission">Submission #{{ submission.id }}</p>
+    </div>
+    <button *ngIf="showClose" class="comm-result-close" (click)="closePanel()">x</button>
+  </div>
+
+  <div class="comm-result-body">
+    <div class="comm-result-loading" *ngIf="loading">
+      <div class="spinner"></div>
+      <p>Analyzing answers and loading AI feedback...</p>
+    </div>
+
+    <div *ngIf="!loading && submission">
+      <div class="comm-detail-grid">
+        <div class="comm-detail-item" *ngIf="hasValue(submission.testId)">
+          <label>Test ID</label>
+          <span>{{ submission.testId }}</span>
+        </div>
+        <div class="comm-detail-item" *ngIf="hasValue(submission.status)">
+          <label>Status</label>
+          <span>{{ submission.status }}</span>
+        </div>
+        <div class="comm-detail-item" *ngIf="hasValue(submission.startedAt)">
+          <label>Started At</label>
+          <span>{{ submission.startedAt | date:'medium' }}</span>
+        </div>
+        <div class="comm-detail-item" *ngIf="hasValue(submission.completedAt)">
+          <label>Completed At</label>
+          <span>{{ submission.completedAt | date:'medium' }}</span>
+        </div>
+        <div class="comm-detail-item" *ngIf="hasValue(submission.overallScore)">
+          <label>Overall AI Score</label>
+          <span>{{ submission.overallScore | number:'1.1-2' }}</span>
+        </div>
+      </div>
+
+      <div class="comm-answers-section" *ngIf="submission.answers?.length">
+        <h4>Answers</h4>
+        <div class="comm-answer-card" *ngFor="let ans of submission.answers; let i = index">
+          <div class="comm-answer-head">Answer {{ i + 1 }}</div>
+
+          <div class="comm-detail-grid">
+            <div class="comm-detail-item" *ngIf="hasValue(ans.questionText)">
+              <label>Question</label>
+              <span>{{ ans.questionText }}</span>
+            </div>
+            <div class="comm-detail-item" *ngIf="hasValue(ans.transcriptionStatus)">
+              <label>Transcription Status</label>
+              <span>{{ ans.transcriptionStatus }}</span>
+            </div>
+            <div class="comm-detail-item" *ngIf="hasValue(ans.confidenceScore)">
+              <label>Confidence Score</label>
+              <span>{{ ans.confidenceScore }}</span>
+            </div>
+            <div class="comm-detail-item" *ngIf="hasValue(ans.audioDurationSeconds)">
+              <label>Audio Duration</label>
+              <span>{{ ans.audioDurationSeconds }} sec</span>
+            </div>
+            <div class="comm-detail-item" *ngIf="hasValue(ans.createdAt)">
+              <label>Submitted At</label>
+              <span>{{ ans.createdAt | date:'medium' }}</span>
+            </div>
+          </div>
+
+          <div class="comm-detail-text" *ngIf="hasValue(ans.transcript)">
+            <label>Transcript</label>
+            <p>{{ ans.transcript }}</p>
+          </div>
+
+          <div class="comm-feedback-block" *ngIf="ans.feedback">
+            <h5>AI Feedback</h5>
+            <div class="comm-detail-grid">
+              <div class="comm-detail-item" *ngIf="hasValue(ans.feedback.aiScore)">
+                <label>AI Score</label>
+                <span>{{ ans.feedback.aiScore }}</span>
+              </div>
+              <div class="comm-detail-item" *ngIf="hasValue(ans.feedback.grammarScore)">
+                <label>Grammar</label>
+                <span>{{ ans.feedback.grammarScore }}</span>
+              </div>
+              <div class="comm-detail-item" *ngIf="hasValue(ans.feedback.clarityScore)">
+                <label>Clarity</label>
+                <span>{{ ans.feedback.clarityScore }}</span>
+              </div>
+              <div class="comm-detail-item" *ngIf="hasValue(ans.feedback.fluencyScore)">
+                <label>Fluency</label>
+                <span>{{ ans.feedback.fluencyScore }}</span>
+              </div>
+            </div>
+
+            <div class="comm-detail-text" *ngIf="hasValue(ans.feedback.strengths)">
+              <label>Strengths</label>
+              <p>{{ ans.feedback.strengths }}</p>
+            </div>
+            <div class="comm-detail-text" *ngIf="hasValue(ans.feedback.weaknesses)">
+              <label>Weaknesses</label>
+              <p>{{ ans.feedback.weaknesses }}</p>
+            </div>
+            <div class="comm-detail-text" *ngIf="hasValue(ans.feedback.suggestions)">
+              <label>Suggestions</label>
+              <p>{{ ans.feedback.suggestions }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="comm-result-empty" *ngIf="!submission.answers?.length">
+        <div class="empty-icon">i</div>
+        <h4>No answer details available</h4>
+        <p>This submission has no answer payload yet.</p>
+      </div>
+    </div>
+
+    <div class="comm-result-empty" *ngIf="!loading && !submission">
+      <div class="empty-icon">...</div>
+      <h4>Result is being prepared</h4>
+      <p>Please wait a moment and try again.</p>
+    </div>
+  </div>
+</div>

@@ -3,12 +3,14 @@ import { Injectable } from '@angular/core';
 import { CodingQuestion } from '../model/coding-question.model';
 import { CodingTestCase } from '../model/coding-test-case.model';
 import { CodingQuestionListItem } from '../model/coding-question-list.model';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class CodingCreatorService {
 
-  private BASE_URL =
-    'http://localhost:8080/interviewpro/coding/v1/creator';
+  private BASE_URL = environment.production
+    ? `${environment.apiUrl}/interviewpro/coding/v1/creator`
+    : '/interviewpro/coding/v1/creator';
 
   constructor(private http: HttpClient) {}
 

@@ -16,12 +16,15 @@
       <h1 class="page-title">My Dashboard</h1>
       <p class="page-sub">Track your progress across all interview rounds</p>
     </div>
-    <button class="btn-primary" (click)="takeTest()">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-      </svg>
-      Take New Test
-    </button>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
+      <button class="btn-primary" (click)="openChangePassword()">Change Password</button>
+      <button class="btn-primary" (click)="takeTest()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Take New Test
+      </button>
+    </div>
   </div>
 
   <!-- ── Stats Cards ── -->
@@ -263,6 +266,10 @@
           <span class="comm-answers-badge" *ngIf="sub.answers?.length">
             {{ sub.answers.length }} answer{{ sub.answers.length !== 1 ? 's' : '' }}
           </span>
+
+          <button class="comm-view-btn" (click)="viewCommFeedback(sub)">
+            View
+          </button>
         </div>
       </div>
     </div>
@@ -275,4 +282,24 @@
     </div>
   </div>
 
+</div>
+
+<!-- Communication Result Modal -->
+<div class="comm-modal-backdrop" *ngIf="selectedCommSubmission" (click)="closeCommFeedback()">
+  <div class="comm-modal" (click)="$event.stopPropagation()">
+    <div class="comm-modal-header">
+      <div>
+        <h3>Communication Result</h3>
+        <p>Submission #{{ selectedCommSubmission.id }}</p>
+      </div>
+      <button class="comm-modal-close" (click)="closeCommFeedback()">x</button>
+    </div>
+
+    <ng-container *ngComponentOutlet="communicationResultComponent; inputs: {
+      submission: selectedCommSubmission,
+      title: 'Communication Result',
+      subtitle: 'Submission #' + selectedCommSubmission.id,
+      showHeader: false
+    }"></ng-container>
+  </div>
 </div>

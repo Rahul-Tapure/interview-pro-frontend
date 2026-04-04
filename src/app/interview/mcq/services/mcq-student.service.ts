@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 import { Test } from '../models/test.model';
 import { Result } from '../models/result.model';
@@ -8,7 +9,9 @@ import { Result } from '../models/result.model';
 @Injectable({ providedIn: 'root' })
 export class McqStudentService {
 
-  private BASE_URL = 'http://localhost:8080/interviewpro/mcq/v1';
+  private BASE_URL = environment.production
+    ? `${environment.apiUrl}/interviewpro/mcq/v1`
+    : '/interviewpro/mcq/v1';
 
   constructor(private http: HttpClient) {}
 

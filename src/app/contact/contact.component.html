@@ -30,7 +30,7 @@
 
       <div class="info-card" *ngFor="let info of contactInfo; let i = index" [style]="'--i:' + i">
         <div class="info-icon" [style]="'background:' + info.bg + '; color:' + info.clr">
-          <span [innerHTML]="info.icon"></span>
+          <span>{{ info.icon }}</span>
         </div>
         <div>
           <div class="info-label">{{ info.label }}</div>
@@ -42,8 +42,8 @@
       <div class="social-section">
         <div class="social-label">Follow us</div>
         <div class="social-row">
-          <a *ngFor="let s of socials" [href]="s.url" class="social-btn" target="_blank" rel="noopener">
-            <span [innerHTML]="s.icon"></span>
+          <a *ngFor="let s of socials" [href]="s.url" class="social-btn" target="_blank" rel="noopener noreferrer" [attr.aria-label]="s.label">
+            <span>{{ s.icon }}</span>
           </a>
         </div>
       </div>
@@ -63,7 +63,7 @@
             </svg>
           </div>
           <h3 class="success-title">Message Sent!</h3>
-          <p class="success-sub">Thank you for reaching out. We'll reply to <strong>{{ contactForm.get('email')?.value }}</strong> within 24 hours.</p>
+          <p class="success-sub">{{ successMessage || 'Thank you for reaching out.' }} We'll reply to <strong>{{ submittedEmail }}</strong> within 24 hours.</p>
           <button class="reset-btn" (click)="resetForm()">Send Another Message</button>
         </div>
 

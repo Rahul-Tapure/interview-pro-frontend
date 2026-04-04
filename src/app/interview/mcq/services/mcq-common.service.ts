@@ -1,13 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 import { Test } from '../models/test.model';
 
 @Injectable({ providedIn: 'root' })
 export class McqCommonService {
 
-  private BASE_URL = 'http://localhost:8080/interviewpro/home';
+  private BASE_URL = environment.production
+    ? `${environment.apiUrl}/interviewpro/home`
+    : '/interviewpro/home';
 
   constructor(private http: HttpClient) {}
 

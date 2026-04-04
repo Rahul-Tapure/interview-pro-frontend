@@ -1,10 +1,12 @@
 // home.component.ts
 
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { Observable, map, shareReplay, startWith } from 'rxjs';
+import { HomeService, HomeStats } from './home.service';
 
 @Component({
   selector: 'app-home',
@@ -14,6 +16,15 @@ import { HttpClient } from '@angular/common/http';
   styleUrls: ['./home.component.css'],
 })
 export class HomeComponent {
+  private homeService = inject(HomeService);
+
+  readonly stats$: Observable<HomeStats & { loading: boolean }> = this.homeService
+    .loadStats()
+    .pipe(
+      map((stats) => ({ ...stats, loading: false })),
+      startWith({ rounds: 4, questions: 0, tests: 0, loading: true }),
+      shareReplay({ bufferSize: 1, refCount: true })
+    );
 
   // ==============================
   // Resume Analyzer State
@@ -182,7 +193,7 @@ export class HomeComponent {
     formData.append('roles', this.roles.trim());
 
     // Uses Angular interceptor for JWT automatically
-    this.http.post('http://localhost:8080/api/resume/analyze', formData)
+    this.http.post('/api/resume/analyze', formData)
       .subscribe({
         next: (response: any) => {
           this.result = response;

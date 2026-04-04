@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 
 import { QuestionCount } from '../models/question-count.model';
 import { PreviousQuestion } from '../models/previous-question.model';
@@ -8,7 +9,9 @@ import { PreviousQuestion } from '../models/previous-question.model';
 @Injectable({ providedIn: 'root' })
 export class McqCreatorService {
 
-  private BASE_URL = 'http://localhost:8080/interviewpro/mcq/v1';
+  private BASE_URL = environment.production
+    ? `${environment.apiUrl}/interviewpro/mcq/v1`
+    : '/interviewpro/mcq/v1';
 
   constructor(private http: HttpClient) {}
 

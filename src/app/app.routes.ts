@@ -28,7 +28,41 @@ export const routes: Routes = [
       import('./register/register.component')
         .then(m => m.RegisterComponent)
   },
-
+  {
+    path: 'forgot-password',
+    canActivate: [loginGuard],
+    loadComponent: () =>
+      import('./auth/forgot-password/forgot-password.component')
+        .then(m => m.ForgotPasswordComponent)
+  },
+  {
+    path: 'reset-password',
+    canActivate: [loginGuard],
+    loadComponent: () =>
+      import('./auth/reset-password/reset-password.component')
+        .then(m => m.ResetPasswordComponent)
+  },
+  {
+    path: 'reset-password/:token',
+    canActivate: [loginGuard],
+    loadComponent: () =>
+      import('./auth/reset-password/reset-password.component')
+        .then(m => m.ResetPasswordComponent)
+  },
+  {
+    path: 'forgot-password/verify-otp',
+    canActivate: [loginGuard],
+    loadComponent: () =>
+      import('./auth/change-password-otp/change-password-otp.component')
+        .then(m => m.ChangePasswordOtpComponent)
+  },
+  {
+    path: 'account/change-password',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./auth/change-password-otp/change-password-otp.component')
+        .then(m => m.ChangePasswordOtpComponent)
+  },
   /* HOME (PUBLIC) */
   {
     path: 'home',

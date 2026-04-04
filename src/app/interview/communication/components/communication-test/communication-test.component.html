@@ -126,14 +126,31 @@
 <!-- ── Completed State ── -->
 <div class="completed-wrapper" *ngIf="completed">
   <div class="completed-card">
-    <div class="completed-icon">
-      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-        <polyline points="22 4 12 14.01 9 11.01"/>
-      </svg>
+    <div class="completed-top">
+      <div class="completed-icon">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+          <polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+      </div>
+      <h2 class="completed-title">Communication Round Complete!</h2>
+      <p class="completed-text">All {{ questions.length }} questions answered. Feedback will appear below once analysis is ready.</p>
     </div>
-    <h2 class="completed-title">Communication Round Complete!</h2>
-    <p class="completed-text">All {{ questions.length }} questions answered. Your responses are being processed.</p>
+
+    <div class="feedback-loader" *ngIf="feedbackLoading">
+      <span class="btn-spinner"></span>
+      <span>Fetching your result and AI feedback...</span>
+    </div>
+
+    <p class="feedback-error" *ngIf="feedbackError">{{ feedbackError }}</p>
+
+    <app-communication-result
+      [submission]="completedSubmission"
+      [loading]="feedbackLoading"
+      [title]="'Communication Result'"
+      [subtitle]="'Submission #' + submissionId">
+    </app-communication-result>
+
     <div class="completed-actions">
       <button class="btn-dashboard" (click)="goToDashboard()">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">

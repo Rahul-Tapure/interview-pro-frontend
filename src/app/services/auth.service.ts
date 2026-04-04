@@ -7,6 +7,7 @@ import {
   of,
   tap
 } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 interface CurrentUser {
   id: number;
@@ -14,10 +15,29 @@ interface CurrentUser {
   roles: string[];
 }
 
+interface ApiResponse<T = unknown> {
+  success?: boolean;
+  message?: string;
+  data?: T;
+}
+
+interface RegisterPayload {
+  email: string;
+  password: string;
+  role: string;
+}
+
+interface RegisterVerifyPayload extends RegisterPayload {
+  otp: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
-  private BASE_URL = 'http://localhost:8080/interviewpro/entry/v1';
+  // 🔥 Use proxy for development, full URL for production
+  private BASE_URL = environment.production 
+    ? `${environment.apiUrl}/interviewpro/entry/v1`
+    : '/interviewpro/entry/v1';
 
   private authInitializedSubject = new BehaviorSubject<boolean>(false);
 authInitialized$ = this.authInitializedSubject.asObservable();
@@ -63,12 +83,17 @@ isAuthenticated() {
   /* ================= LOGIN ================= */
 
   login(data: { email: string; password: string }) {
-    return this.http.post(
+    return this.http.post<ApiResponse>(
       `${this.BASE_URL}/login`,
       data,
       { withCredentials: true }
     ).pipe(
-      tap(() => {
+      tap((response) => {
+        // If backend includes a success flag, respect it before mutating auth state.
+        if (response?.success === false) {
+          return;
+        }
+
         this.authState$.next(true);
         this.loadMe().subscribe(); // 🔥 load roles immediately
       })
@@ -150,5 +175,67 @@ isAuthenticated() {
     { withCredentials: true }
   );
 }
+
+  requestRegisterOtp(data: RegisterPayload) {
+    return this.http.post<ApiResponse>(
+      `${this.BASE_URL}/register/request-otp`,
+      data,
+      { withCredentials: true }
+    );
+  }
+
+  verifyRegisterOtp(data: RegisterVerifyPayload) {
+    return this.http.post<ApiResponse>(
+      `${this.BASE_URL}/register/verify-otp`,
+      data,
+      { withCredentials: true }
+    );
+  }
+
+  requestPasswordReset(email: string) {
+    return this.http.post(
+      `${this.BASE_URL}/forgot-password`,
+      { email }
+    );
+  }
+
+  resetPassword(data: { token: string; newPassword: string }) {
+    return this.http.post(
+      `${this.BASE_URL}/reset-password`,
+      data
+    );
+  }
+
+  requestPasswordChangeOtp(email: string) {
+    return this.http.post(
+      `${this.BASE_URL}/password-change/request-otp`,
+      { email },
+      { withCredentials: true }
+    );
+  }
+
+  verifyPasswordChangeOtp(data: { email: string; otp: string; newPassword: string }) {
+    return this.http.post(
+      `${this.BASE_URL}/password-change/verify-otp`,
+      data,
+      { withCredentials: true }
+    );
+  }
+
+  requestEmailChangeOtp(newEmail: string) {
+    return this.http.post(
+      `${this.BASE_URL}/email-change/request-otp`,
+      { newEmail },
+      { withCredentials: true }
+    );
+  }
+
+  verifyEmailChangeOtp(data: { newEmail: string; otp: string }) {
+    return this.http.post(
+      `${this.BASE_URL}/email-change/verify-otp`,
+      data,
+      { withCredentials: true }
+    );
+  }
 
 }

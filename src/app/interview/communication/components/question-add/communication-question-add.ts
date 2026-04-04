@@ -8,7 +8,10 @@ import {
   Validators
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CommunicationService } from '../../services/communication.service';
+import {
+  CommunicationService,
+  CommunicationTest
+} from '../../services/communication.service';
 
 @Component({
   standalone: true,
@@ -53,9 +56,9 @@ export class CommunicationQuestionAddComponent implements OnInit {
     this.step = Number(this.route.snapshot.queryParamMap.get('step')) || 1;
 
     // Load test to get totalQuestions and check if published
-    this.service.getTest(this.testId).subscribe(test => {
-      if (test.isActive) {
-        alert('⚠️ This test is published and cannot be edited.');
+    this.service.getTest(this.testId).subscribe((test: CommunicationTest) => {
+      if (test.status !== 'DRAFT') {
+        alert('⚠️ Only draft tests can be edited.');
         this.router.navigate(['/dashboard/creator']);
         return;
       }

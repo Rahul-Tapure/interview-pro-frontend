@@ -1,0 +1,43 @@
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <h2>Change Email (OTP)</h2>
+    <p class="subtitle">Verify OTP to securely update your account email.</p>
+
+    <div class="section">
+      <h3>1. Request OTP</h3>
+      <form [formGroup]="requestForm" (ngSubmit)="requestOtp()" novalidate>
+        <label for="newEmail">New Email</label>
+        <input id="newEmail" type="email" formControlName="newEmail" autocomplete="email" placeholder="new-email@example.com" />
+        <div class="field-error" *ngIf="rf['newEmail'].touched && rf['newEmail'].invalid">
+          <span *ngIf="rf['newEmail'].errors?.['required']">New email is required.</span>
+          <span *ngIf="rf['newEmail'].errors?.['email']">Enter a valid email.</span>
+        </div>
+        <button type="submit" [disabled]="loadingRequest">
+          <span *ngIf="!loadingRequest">Send OTP</span>
+          <span *ngIf="loadingRequest">Sending...</span>
+        </button>
+      </form>
+    </div>
+
+    <div class="section" *ngIf="otpSent">
+      <h3>2. Verify OTP & Change Email</h3>
+      <form [formGroup]="verifyForm" (ngSubmit)="verifyAndChangeEmail()" novalidate>
+        <label for="verifyEmail">New Email</label>
+        <input id="verifyEmail" type="email" formControlName="newEmail" autocomplete="email" />
+
+        <label for="otp">OTP</label>
+        <input id="otp" type="text" formControlName="otp" autocomplete="one-time-code" placeholder="Enter OTP" />
+
+        <button type="submit" [disabled]="loadingVerify">
+          <span *ngIf="!loadingVerify">Verify OTP & Update Email</span>
+          <span *ngIf="loadingVerify">Updating...</span>
+        </button>
+      </form>
+    </div>
+
+    <div class="message success" *ngIf="successMessage">{{ successMessage }}</div>
+    <div class="message error" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+    <p class="back-link"><a routerLink="/dashboard/user">Back to Dashboard</a></p>
+  </div>
+</div>

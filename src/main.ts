@@ -25,5 +25,8 @@ bootstrapApplication(AppComponent, {
       deps: [AuthService],
       multi: true
     }
+    
   ]
+
+  
 });

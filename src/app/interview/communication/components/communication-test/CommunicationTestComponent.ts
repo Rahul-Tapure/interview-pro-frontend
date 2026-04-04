@@ -2,11 +2,12 @@ import { Component, OnInit, OnDestroy, NgZone, ChangeDetectorRef } from '@angula
 import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CommunicationService } from '../../services/communication.service';
+import { CommunicationResultComponent } from '../communication-result/communication-result.component';
 
 @Component({
   selector: 'app-communication-test',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, CommunicationResultComponent],
   templateUrl: './communication-test.component.html',
   styleUrls: ['./communication-test.component.css']
 })
@@ -27,9 +28,13 @@ export class CommunicationTestComponent implements OnInit, OnDestroy {
   recorded = false;
   submitting = false;
   completed = false;
+  feedbackLoading = false;
+  feedbackError = '';
+  completedSubmission: any | null = null;
 
   timer = 120;
   interval: any;
+  feedbackRetryTimeout: any;
 
   constructor(
     private route: ActivatedRoute,
@@ -66,6 +71,7 @@ export class CommunicationTestComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     clearInterval(this.interval);
+    clearTimeout(this.feedbackRetryTimeout);
     if (this.mediaRecorder && this.mediaRecorder.state !== 'inactive') {
       this.mediaRecorder.stop();
     }
@@ -186,18 +192,7 @@ export class CommunicationTestComponent implements OnInit, OnDestroy {
     this.currentIndex++;
 
     if (this.currentIndex >= this.questions.length) {
-      this.communicationService.completeSubmission(this.submissionId).subscribe({
-        next: (res) => {
-          console.log('Submission completed:', res);
-          this.completed = true;
-          this.cdr.detectChanges();
-        },
-        error: (err) => {
-          console.error('Complete submission failed', err);
-          this.completed = true;
-          this.cdr.detectChanges();
-        }
-      });
+      this.finishTestAndLoadFeedback();
       return;
     }
 
@@ -206,5 +201,65 @@ export class CommunicationTestComponent implements OnInit, OnDestroy {
     this.timer = this.questions[this.currentIndex].timeLimit || 120;
     this.audioChunks = [];
     clearInterval(this.interval);
+  }
+
+  private finishTestAndLoadFeedback(): void {
+    this.completed = true;
+    this.feedbackLoading = true;
+    this.feedbackError = '';
+    this.completedSubmission = null;
+
+    this.communicationService.completeSubmission(this.submissionId).subscribe({
+      next: () => {
+        this.fetchCompletedSubmissionWithRetry();
+      },
+      error: (err) => {
+        console.error('Complete submission failed', err);
+        this.fetchCompletedSubmissionWithRetry();
+      }
+    });
+  }
+
+  private fetchCompletedSubmissionWithRetry(attempt = 0): void {
+    const maxAttempts = 8;
+
+    this.communicationService.getCompletedSubmissions().subscribe({
+      next: (submissions) => {
+        const matched = submissions.find((sub: any) => Number(sub.id) === Number(this.submissionId));
+
+        if (matched) {
+          this.completedSubmission = matched;
+          this.feedbackLoading = false;
+          this.feedbackError = '';
+          this.cdr.detectChanges();
+          return;
+        }
+
+        if (attempt < maxAttempts) {
+          this.feedbackRetryTimeout = setTimeout(() => {
+            this.fetchCompletedSubmissionWithRetry(attempt + 1);
+          }, 2000);
+          return;
+        }
+
+        this.feedbackLoading = false;
+        this.feedbackError = 'Feedback is still processing. Please check your dashboard in a moment.';
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Failed to load completed communication submissions', err);
+
+        if (attempt < maxAttempts) {
+          this.feedbackRetryTimeout = setTimeout(() => {
+            this.fetchCompletedSubmissionWithRetry(attempt + 1);
+          }, 2000);
+          return;
+        }
+
+        this.feedbackLoading = false;
+        this.feedbackError = 'Unable to load feedback right now. Please check your dashboard.';
+        this.cdr.detectChanges();
+      }
+    });
   }
 }

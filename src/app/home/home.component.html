@@ -27,20 +27,20 @@
       all in one place. Track progress, sharpen skills, get hired.
     </p>
 
-    <div class="hero-stats">
+    <div class="hero-stats" *ngIf="stats$ | async as stats">
       <div class="stat-item">
-        <span class="stat-num">4</span>
+        <span class="stat-num" [class.stat-loading]="stats.loading">{{ stats.rounds }}</span>
         <span class="stat-label">Interview Rounds</span>
       </div>
       <div class="stat-divider"></div>
       <div class="stat-item">
-        <span class="stat-num">200+</span>
-        <span class="stat-label">Practice Questions</span>
+        <span class="stat-num" [class.stat-loading]="stats.loading">{{ stats.questions }}</span>
+        <span class="stat-label">Live Questions</span>
       </div>
       <div class="stat-divider"></div>
       <div class="stat-item">
-        <span class="stat-num">98%</span>
-        <span class="stat-label">Success Rate</span>
+        <span class="stat-num" [class.stat-loading]="stats.loading">{{ stats.tests }}</span>
+        <span class="stat-label">Live Tests</span>
       </div>
     </div>
   </div>
@@ -48,8 +48,9 @@
   <div class="section-label pt-8">Resume Analyzer</div>
 
   <!-- Resume Analyzer Round -->
-<div class="round-card card-resume" style="--i:4">
+<div class="round-card card-resume card-premium" style="--i:4">
   <div class="card-glow"></div>
+  <div class="premium-halo"></div>
 
   <div class="card-top">
     <div class="card-icon icon-resume">
@@ -59,7 +60,7 @@
         <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414A1 1 0 0121 9.414V19a2 2 0 01-2 2z"/>
       </svg>
     </div>
-    <div class="card-badge badge-active">New</div>
+    <div class="card-badge badge-premium">Premium</div>
   </div>
 
   <h2 class="card-title">Resume Analyzer</h2>
@@ -70,10 +71,12 @@
   <div class="card-meta">
     <span class="meta-tag">📄 ATS Score</span>
     <span class="meta-tag">🤖 AI Feedback</span>
+    <span class="meta-tag">⬆ Upload PDF</span>
   </div>
 <a routerLink="/resume" class="card-btn btn-primary">
   Analyze Resume
 </a>
+<p class="resume-hint">Upload your resume to get instant analysis.</p>
 </div>
 
 
@@ -101,21 +104,22 @@
         <span class="meta-tag">🗣️ Soft Skills</span>
       </div>
       <button routerLink="communication/tests" class="card-btn btn-primary" >
-        <span>View Tests</span>
+        <span>Start Practice</span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </button>
     </div>
 
     <!-- Aptitude Round -->
-    <div class="round-card card-aptitude" style="--i:1">
+    <div class="round-card card-aptitude card-recommended" style="--i:1">
       <div class="card-glow"></div>
+      <div class="start-here-chip">Start Here</div>
       <div class="card-top">
         <div class="card-icon icon-apt">
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path d="M9 19v-6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2z"/><path d="M15 13v-2a2 2 0 0 0-2-2h-2"/><path d="M21 7v12a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-6"/>
           </svg>
         </div>
-        <div class="card-badge badge-active">Available</div>
+        <div class="card-badge badge-recommended">Recommended for beginners</div>
       </div>
       <h2 class="card-title">Aptitude Round</h2>
       <p class="card-desc">Sharpen your quantitative aptitude and logical reasoning with timed practice tests.</p>
@@ -124,7 +128,7 @@
         <span class="meta-tag">🧠 Logical</span>
       </div>
       <a routerLink="aptitude/tests" class="card-btn btn-primary">
-        <span>View Tests</span>
+        <span>Start Here - Aptitude Round</span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
     </div>
@@ -147,7 +151,7 @@
         <span class="meta-tag">📚 MCQ Format</span>
       </div>
       <a routerLink="technical/tests" class="card-btn btn-primary">
-        <span>View Tests</span>
+        <span>Explore MCQs</span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
     </div>
@@ -170,7 +174,7 @@
         <span class="meta-tag">🏆 Challenges</span>
       </div>
       <a routerLink="coding/tests" class="card-btn btn-primary">
-        <span>View Tests</span>
+        <span>Solve Challenges</span>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
       </a>
     </div>

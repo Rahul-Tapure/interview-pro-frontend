@@ -6,11 +6,12 @@ import { catchError, throwError } from 'rxjs';
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   const router = inject(Router);
+  const isAppApiRequest = req.url.startsWith('/interviewpro') || req.url.startsWith('/api');
 
-  // ✅ Ensure cookies are sent with every request
-  const authReq = req.clone({
-    withCredentials: true
-  });
+  // Send credentials only to application APIs to avoid leaking cookies on third-party requests.
+  const authReq = isAppApiRequest
+    ? req.clone({ withCredentials: true })
+    : req;
 
   return next(authReq).pipe(
     catchError(err => {

@@ -1,5 +1,5 @@
 // login.component.ts
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   NonNullableFormBuilder,
@@ -9,6 +9,17 @@ import {
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+
+interface LoginApiData {
+  redirectTo?: string;
+  roles?: string[];
+}
+
+interface ApiResponse<T = unknown> {
+  success?: boolean;
+  message?: string;
+  data?: T;
+}
 
 @Component({
   selector: 'app-login',
@@ -22,12 +33,14 @@ export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
   loading = false;
   errorMessage = '';
+  readonly invalidCredentialsMessage = 'Invalid email or password';
   showPassword = false;
 
   constructor(
     private fb: NonNullableFormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -49,17 +62,57 @@ export class LoginComponent implements OnInit {
     const loginData = this.loginForm.getRawValue();
 
     this.authService.login(loginData).subscribe({
-      next: () => {
-        this.loading = false;
-        this.router.navigate(['/home']);
+      next: (response) => {
+        this.applyUiState(() => {
+          this.loading = false;
+
+          const typedResponse = response as ApiResponse<LoginApiData>;
+
+          if (typedResponse?.success === false) {
+            this.errorMessage = this.invalidCredentialsMessage;
+            return;
+          }
+
+          const redirectFromApi = typedResponse?.data?.redirectTo;
+          const roles = typedResponse?.data?.roles ?? [];
+
+          if (redirectFromApi) {
+            this.router.navigate([redirectFromApi]);
+            return;
+          }
+
+          if (roles.includes('ROLE_CREATOR')) {
+            this.router.navigate(['/dashboard/creator']);
+            return;
+          }
+
+          if (roles.includes('ROLE_STUDENT')) {
+            this.router.navigate(['/dashboard/user']);
+            return;
+          }
+
+          this.router.navigate(['/home']);
+        });
       },
       error: (err) => {
-        this.loading = false;
-        this.errorMessage =
-          err?.error?.message || 'Invalid email or password';
+        this.applyUiState(() => {
+          this.loading = false;
+          this.errorMessage = this.invalidCredentialsMessage;
+        });
         console.error('Login failed', err);
       }
     });
+  }
+
+  private applyUiState(updateFn: () => void): void {
+    updateFn();
+    this.cdr.detectChanges();
+  }
+
+  clearErrorMessage(): void {
+    if (this.errorMessage) {
+      this.errorMessage = '';
+    }
   }
 
   get f() {

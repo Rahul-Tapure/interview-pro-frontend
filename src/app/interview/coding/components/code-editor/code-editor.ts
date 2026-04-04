@@ -8,6 +8,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import * as monaco from 'monaco-editor';
+import { environment } from '../../../../../environments/environment';
 
 interface Judge0Language {
   id: number;
@@ -336,7 +337,10 @@ echo "Hello, InterviewPro!"`,
 
   /** Load languages from backend (which fetches from Judge0) */
   loadLanguagesFromJudge0(): void {
-    this.http.get<Judge0Language[]>('/interviewpro/coding/languages', { withCredentials: true })
+    const url = environment.production
+      ? `${environment.apiUrl}/interviewpro/coding/languages`
+      : '/interviewpro/coding/languages';
+    this.http.get<Judge0Language[]>(url, { withCredentials: true })
       .subscribe({
         next: (langs) => {
           this.languages = langs.map(lang => ({

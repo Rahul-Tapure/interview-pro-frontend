@@ -6,6 +6,7 @@ import { Chart } from 'chart.js/auto';
 import { McqStudentService } from '../../interview/mcq/services/mcq-student.service';
 import { CodingStudentService } from '../../interview/coding/service/coding-student.service';
 import { CommunicationService } from '../../interview/communication/services/communication.service';
+import { CommunicationResultComponent } from '../../interview/communication/components/communication-result/communication-result.component';
 
 @Component({
   standalone: true,
@@ -15,11 +16,14 @@ import { CommunicationService } from '../../interview/communication/services/com
 })
 export class UserDashboardComponent implements OnInit {
 
+  readonly communicationResultComponent = CommunicationResultComponent;
+
   results: any[] = [];
   chart!: Chart;
   codingResults: any[] = [];
   commSubmissions: any[] = [];
   commLoading = true;
+  selectedCommSubmission: any | null = null;
 
   constructor(
     private studentService: McqStudentService,
@@ -164,6 +168,10 @@ mergeResultsForDashboard(): void {
     this.router.navigate(['/tests']);
   }
 
+  openChangePassword(): void {
+    this.router.navigate(['/account/change-password']);
+  }
+
   loadCommResults(): void {
     this.commLoading = true;
     this.communicationService.getCompletedSubmissions().subscribe({
@@ -190,6 +198,19 @@ mergeResultsForDashboard(): void {
   }
 
   viewCommFeedback(submission: any): void {
-    this.router.navigate(['/home/communication/result', submission.id]);
+    this.selectedCommSubmission = submission;
+    this.cdr.detectChanges();
+  }
+
+  closeCommFeedback(): void {
+    this.selectedCommSubmission = null;
+    this.cdr.detectChanges();
+  }
+
+  hasValue(value: any): boolean {
+    if (value === null || value === undefined) return false;
+    if (typeof value === 'string') return value.trim().length > 0;
+    if (Array.isArray(value)) return value.length > 0;
+    return true;
   }
 }

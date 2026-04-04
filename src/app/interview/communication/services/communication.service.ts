@@ -1,11 +1,37 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
+import { environment } from "../../../../environments/environment";
+
+export type CommunicationTestStatus = 'DRAFT' | 'ACTIVE' | 'ARCHIVED' | 'DELETED';
+
+export interface CommunicationQuestion {
+  id?: number;
+  questionId?: number;
+  questionText: string;
+  timeLimit: number;
+  questionOrder?: number;
+  difficultyLevel?: string;
+  category?: string;
+}
+
+export interface CommunicationTest {
+  id: number;
+  title: string;
+  description?: string;
+  totalQuestions?: number;
+  durationMinutes?: number;
+  createdAt?: string;
+  status: CommunicationTestStatus;
+  questions?: CommunicationQuestion[];
+}
 
 @Injectable({ providedIn: 'root' })
 export class CommunicationService {
 
-  private BASE_URL = "/interviewpro/communication";
+  private BASE_URL = environment.production
+    ? `${environment.apiUrl}/interviewpro/communication`
+    : '/interviewpro/communication';
 
   constructor(private http: HttpClient) {}
 
@@ -21,22 +47,22 @@ export class CommunicationService {
     );
   }
 
-  getAllActiveTests(): Observable<any[]> {
-    return this.http.get<any[]>(
+  getAllActiveTests(): Observable<CommunicationTest[]> {
+    return this.http.get<CommunicationTest[]>(
       `${this.BASE_URL}/tests`,
       { withCredentials: true }
     );
   }
 
-  getTest(testId: number): Observable<any> {
-    return this.http.get<any>(
+  getTest(testId: number): Observable<CommunicationTest> {
+    return this.http.get<CommunicationTest>(
       `${this.BASE_URL}/tests/${testId}`,
       { withCredentials: true }
     );
   }
 
-  getMyTests(): Observable<any[]> {
-    return this.http.get<any[]>(
+  getMyTests(): Observable<CommunicationTest[]> {
+    return this.http.get<CommunicationTest[]>(
       `${this.BASE_URL}/tests/my`,
       { withCredentials: true }
     );

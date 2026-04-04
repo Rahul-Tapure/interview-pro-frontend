@@ -6,7 +6,11 @@ import { Observable } from 'rxjs';
 
 import { McqCreatorService } from '../../interview/mcq/services/mcq-creator.service';
 import { CodingCreatorService } from '../../interview/coding/service/coding-creator.service';
-import { CommunicationService } from '../../interview/communication/services/communication.service';
+import {
+  CommunicationService,
+  CommunicationTest,
+  CommunicationTestStatus
+} from '../../interview/communication/services/communication.service';
 
 @Component({
   standalone: true,
@@ -19,7 +23,7 @@ export class CreatorDashboardComponent implements OnInit {
   aptitudeTests$!: Observable<any[]>;
   technicalTests$!: Observable<any[]>;
   codingTests$!: Observable<any[]>;
-  communicationTests$!: Observable<any[]>;
+  communicationTests$!: Observable<CommunicationTest[]>;
 
   message: string | null = null;
 
@@ -140,5 +144,50 @@ export class CreatorDashboardComponent implements OnInit {
       this.showMessage('Communication test published successfully!');
       this.loadAll();
     });
+  }
+
+  getCommunicationStatusLabel(status: CommunicationTestStatus): string {
+    switch (status) {
+      case 'ACTIVE':
+        return 'Active';
+      case 'ARCHIVED':
+        return 'Archived';
+      case 'DELETED':
+        return 'Deleted';
+      default:
+        return 'Draft';
+    }
+  }
+
+  getCommunicationStatusClass(status: CommunicationTestStatus): string {
+    switch (status) {
+      case 'ACTIVE':
+        return 'badge-public';
+      case 'ARCHIVED':
+      case 'DELETED':
+        return 'badge-private';
+      default:
+        return 'badge-draft';
+    }
+  }
+
+  canEditCommunication(test: CommunicationTest): boolean {
+    return test.status === 'DRAFT';
+  }
+
+  canDeleteCommunication(test: CommunicationTest): boolean {
+    return test.status === 'DRAFT' || test.status === 'ACTIVE';
+  }
+
+  canPublishCommunication(test: CommunicationTest): boolean {
+    return test.status === 'DRAFT';
+  }
+
+  isCommunicationVisibleToStudents(test: CommunicationTest): boolean {
+    return test.status === 'ACTIVE';
+  }
+
+  isCommunicationRetired(test: CommunicationTest): boolean {
+    return test.status === 'ARCHIVED' || test.status === 'DELETED';
   }
 }
