@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Observable, map, shareReplay, startWith } from 'rxjs';
 import { HomeService, HomeStats } from './home.service';
+import { environment } from '../../environments/environment';
 
 @Component({
   selector: 'app-home',
@@ -193,7 +194,7 @@ export class HomeComponent {
     formData.append('roles', this.roles.trim());
 
     // Uses Angular interceptor for JWT automatically
-    this.http.post('/api/resume/analyze', formData)
+    this.http.post(`${environment.apiUrl}/api/resume/analyze`, formData)
       .subscribe({
         next: (response: any) => {
           this.result = response;

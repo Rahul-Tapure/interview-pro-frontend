@@ -34,10 +34,8 @@ interface RegisterVerifyPayload extends RegisterPayload {
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
-  // 🔥 Use proxy for development, full URL for production
-  private BASE_URL = environment.production 
-    ? `${environment.apiUrl}/interviewpro/entry/v1`
-    : '/interviewpro/entry/v1';
+  // Always use full backend URL from environment
+  private BASE_URL = `${environment.apiUrl}/interviewpro/entry/v1`;
 
   private authInitializedSubject = new BehaviorSubject<boolean>(false);
 authInitialized$ = this.authInitializedSubject.asObservable();

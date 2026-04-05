@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-resume-dashboard',
@@ -32,7 +33,7 @@ export class ResumeDashboardComponent {
 
   /** Load user's resume analysis history */
   loadHistory(): void {
-    this.http.get('/api/resume/my')
+    this.http.get(`${environment.apiUrl}/api/resume/my`)
       .subscribe({
         next: (res: any) => {
           this.resumes = res;
@@ -103,7 +104,7 @@ export class ResumeDashboardComponent {
     this.loading = true;
     this.error = '';
 
-    this.http.post('/api/resume/analyze', formData)
+    this.http.post(`${environment.apiUrl}/api/resume/analyze`, formData)
       .subscribe({
         next: (res: any) => {
           this.loading = false;
