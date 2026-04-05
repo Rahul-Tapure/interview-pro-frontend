@@ -25,11 +25,14 @@ export class AppComponent implements OnInit {
 
   dropdownOpen = false;
   isLoggedIn$!: Observable<boolean>;
+  randomAvatarUrl: string = '';
 
   constructor(
     private authService: AuthService,
     private router: Router
-  ) {}
+  ) {
+    this.randomAvatarUrl = this.generateRandomAvatar();
+  }
 ngOnInit(): void {
   this.isLoggedIn$ = this.authService.authStatus$;
 
@@ -64,6 +67,20 @@ hasUserRole(): boolean {
 
 hasCreatorRole(): boolean {
   return this.authService.hasRole('ROLE_CREATOR');
+}
+
+generateRandomAvatar(): string {
+  // Generate random color for avatar background
+  const colors = ['FF6B6B', '4ECDC4', '45B7D1', 'FFA502', '6C5CE7', 'A29BFE', '00B894', 'FDCB6E', 'E17055', 'D63031'];
+  const randomColor = colors[Math.floor(Math.random() * colors.length)];
+  const randomId = Math.random().toString(36).substring(7);
+  // Using DiceBear avatars service for random avatars
+  return `https://api.dicebear.com/7.x/avataaars/svg?seed=${randomId}&backgroundColor=${randomColor}`;
+}
+
+onImageError(event: any): void {
+  // On image load error, set fallback random avatar
+  event.target.src = this.generateRandomAvatar();
 }
 
 }
