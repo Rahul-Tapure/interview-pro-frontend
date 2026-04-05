@@ -51,10 +51,25 @@ authInitialized$ = this.authInitializedSubject.asObservable();
   private userSubject = new BehaviorSubject<CurrentUser | null>(null);
   readonly user$ = this.userSubject.asObservable();
 
+  // 🔥 Store token as backup for cookie persistence issues
+  private authToken: string | null = null;
+
   // 🔥 THIS WAS MISSING
   private currentUser: CurrentUser | null = null;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    // 🔥 Restore token from localStorage on app startup
+    this.restoreToken();
+  }
+
+  /* ================= TOKEN RESTORATION ================= */
+
+  private restoreToken(): void {
+    const token = localStorage.getItem('entrypasstoken');
+    if (token) {
+      this.authToken = token;
+    }
+  }
 
   /* ================= AUTH CHECK ================= */
 
@@ -92,6 +107,13 @@ isAuthenticated() {
           return;
         }
 
+        // 🔥 Store token if returned in response (for backup if cookie fails)
+        const token = (response as any)?.data?.token || (response as any)?.token;
+        if (token) {
+          this.authToken = token;
+          localStorage.setItem('entrypasstoken', token);
+        }
+
         this.authState$.next(true);
         this.loadMe().subscribe(); // 🔥 load roles immediately
       })
@@ -102,8 +124,10 @@ isAuthenticated() {
 
   logout() {
     this.authState$.next(false);
+    this.authToken = null;
     this.currentUser = null;
     this.userSubject.next(null);
+    localStorage.removeItem('entrypasstoken');
 
     return this.http.post(
       `${this.BASE_URL}/logout`,

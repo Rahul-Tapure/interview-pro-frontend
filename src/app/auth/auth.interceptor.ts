@@ -13,9 +13,21 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
                          req.url.includes('onrender.com');
 
   // Send credentials to all application APIs
-  const authReq = isAppApiRequest
+  let authReq = isAppApiRequest
     ? req.clone({ withCredentials: true })
     : req;
+
+  // 🔥 Also try to add token from localStorage if available (for cross-origin/cookie-blocking scenarios)
+  if (isAppApiRequest) {
+    const token = localStorage.getItem('entrypasstoken');
+    if (token) {
+      authReq = authReq.clone({
+        setHeaders: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+    }
+  }
 
   return next(authReq).pipe(
     catchError(err => {
