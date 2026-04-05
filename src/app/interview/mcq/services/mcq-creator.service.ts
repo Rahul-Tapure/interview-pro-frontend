@@ -9,9 +9,7 @@ import { PreviousQuestion } from '../models/previous-question.model';
 @Injectable({ providedIn: 'root' })
 export class McqCreatorService {
 
-  private BASE_URL = environment.production
-    ? `${environment.apiUrl}/interviewpro/mcq/v1`
-    : '/interviewpro/mcq/v1';
+  private BASE_URL = `${environment.apiUrl}/interviewpro/mcq/v1`;
 
   constructor(private http: HttpClient) {}
 

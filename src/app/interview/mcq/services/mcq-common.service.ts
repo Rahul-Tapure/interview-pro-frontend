@@ -8,9 +8,7 @@ import { Test } from '../models/test.model';
 @Injectable({ providedIn: 'root' })
 export class McqCommonService {
 
-  private BASE_URL = environment.production
-    ? `${environment.apiUrl}/interviewpro/home`
-    : '/interviewpro/home';
+  private BASE_URL = `${environment.apiUrl}/interviewpro/home`;
 
   constructor(private http: HttpClient) {}
 

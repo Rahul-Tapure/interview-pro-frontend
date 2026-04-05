@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { Location } from '@angular/common';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-resume-result',
@@ -27,7 +28,7 @@ export class ResumeResultComponent {
     this.resultId = this.route.snapshot.paramMap.get('id');
 
     if (this.resultId) {
-      this.http.get(`/api/resume/${this.resultId}`)
+      this.http.get(`${environment.apiUrl}/api/resume/${this.resultId}`)
         .subscribe({
           next: (res: any) => {
             this.result = res;
@@ -52,10 +53,10 @@ export class ResumeResultComponent {
     if (!this.resultId) return;
 
     // Option 1: Download from backend endpoint
-    //window.open(`/api/resume/${this.resultId}/download`, '_blank');
+    //window.open(`${environment.apiUrl}/api/resume/${this.resultId}/download`, '_blank');
 
     // Option 2: Or use HttpClient to get blob and trigger download
-    this.http.get(`/api/resume/${this.resultId}/download`, {
+    this.http.get(`${environment.apiUrl}/api/resume/${this.resultId}/download`, {
       responseType: 'blob'
     }).subscribe((blob: Blob) => {
       const url = window.URL.createObjectURL(blob);

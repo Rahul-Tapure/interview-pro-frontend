@@ -29,9 +29,7 @@ export interface CommunicationTest {
 @Injectable({ providedIn: 'root' })
 export class CommunicationService {
 
-  private BASE_URL = environment.production
-    ? `${environment.apiUrl}/interviewpro/communication`
-    : '/interviewpro/communication';
+  private BASE_URL = `${environment.apiUrl}/interviewpro/communication`;
 
   constructor(private http: HttpClient) {}
 

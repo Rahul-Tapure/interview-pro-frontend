@@ -6,9 +6,7 @@ import { environment } from "../../../../environments/environment";
 @Injectable({ providedIn: 'root' })
 export class CodingStudentService {
 
-  private baseUrl = environment.production
-    ? `${environment.apiUrl}/interviewpro/coding/v1`
-    : '/interviewpro/coding/v1';
+  private baseUrl = `${environment.apiUrl}/interviewpro/coding/v1`;
 
   constructor(private http: HttpClient) {}
 

@@ -8,9 +8,7 @@ import { environment } from '../../../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class CodingCreatorService {
 
-  private BASE_URL = environment.production
-    ? `${environment.apiUrl}/interviewpro/coding/v1/creator`
-    : '/interviewpro/coding/v1/creator';
+  private BASE_URL = `${environment.apiUrl}/interviewpro/coding/v1/creator`;
 
   constructor(private http: HttpClient) {}
 

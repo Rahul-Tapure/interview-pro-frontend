@@ -6,9 +6,13 @@ import { catchError, throwError } from 'rxjs';
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
   const router = inject(Router);
-  const isAppApiRequest = req.url.startsWith('/interviewpro') || req.url.startsWith('/api');
+  // Check if it's an API request (relative path OR full backend URL)
+  const isAppApiRequest = req.url.startsWith('/interviewpro') || 
+                         req.url.startsWith('/api') || 
+                         req.url.includes('interview-pro-backend') ||
+                         req.url.includes('onrender.com');
 
-  // Send credentials only to application APIs to avoid leaking cookies on third-party requests.
+  // Send credentials to all application APIs
   const authReq = isAppApiRequest
     ? req.clone({ withCredentials: true })
     : req;

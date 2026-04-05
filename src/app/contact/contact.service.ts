@@ -19,9 +19,7 @@ interface ContactResponse {
 @Injectable({ providedIn: 'root' })
 export class ContactService {
 
-  private readonly apiUrl = environment.production
-    ? `${environment.apiUrl}/interviewpro/api/contact`
-    : '/interviewpro/api/contact';
+  private readonly apiUrl = `${environment.apiUrl}/interviewpro/api/contact`;
 
   constructor(private http: HttpClient) {}
 

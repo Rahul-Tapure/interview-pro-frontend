@@ -13,9 +13,7 @@ export interface HomeStats {
   providedIn: 'root'
 })
 export class HomeService {
-  private baseUrl = environment.production 
-    ? `${environment.apiUrl}/interviewpro/home`
-    : '/interviewpro/home';
+  private baseUrl = `${environment.apiUrl}/interviewpro/home`;
 
   constructor(private http: HttpClient) {}
 
