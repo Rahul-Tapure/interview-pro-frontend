@@ -32,8 +32,8 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   return next(authReq).pipe(
     catchError(err => {
 
-      if (err.status === 401) {
-        // 🔐 Session expired / invalid
+      if (err.status === 401 || err.status === 403) {
+        // 🔐 Session expired / invalid / unauthorized - redirect to login
         router.navigate(['/login']);
       }
 
