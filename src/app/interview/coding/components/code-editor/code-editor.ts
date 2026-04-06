@@ -383,6 +383,11 @@ echo "Hello, InterviewPro!"`,
       smoothScrolling: true,
     });
 
+    // Focus the editor to enable keyboard input
+    setTimeout(() => {
+      this.editor.focus();
+    }, 100);
+
     this.editor.onDidChangeModelContent(() => {
       this.code = this.editor.getValue();
     });
@@ -391,12 +396,20 @@ echo "Hello, InterviewPro!"`,
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['initialCode'] && this.editor) {
       const langName = this.getLanguageName(this.selectedLanguageId);
+      const currentModel = this.editor.getModel();
+      if (currentModel) {
+        currentModel.dispose();
+      }
       const model = monaco.editor.createModel(
         this.initialCode, 
         this.getMonacoMode(langName)
       );
       this.editor.setModel(model);
       this.code = this.initialCode;
+      // Re-focus editor after model change
+      setTimeout(() => {
+        this.editor.focus();
+      }, 50);
     }
     if (changes['consoleOutput']) {
       this.cdr.detectChanges();
@@ -423,10 +436,18 @@ echo "Hello, InterviewPro!"`,
     
     const newCode = this.getTemplateCode(this.selectedLanguageId);
     const langName = this.getLanguageName(this.selectedLanguageId);
+    const currentModel = this.editor.getModel();
+    if (currentModel) {
+      currentModel.dispose();
+    }
     const model = monaco.editor.createModel(newCode, this.getMonacoMode(langName));
     this.editor.setModel(model);
     this.code = newCode;
     this.languageIdChange.emit(this.selectedLanguageId);
+    // Ensure editor has focus after language change
+    setTimeout(() => {
+      this.editor.focus();
+    }, 50);
   }
 
   /** Get template code for a Judge0 language ID */
