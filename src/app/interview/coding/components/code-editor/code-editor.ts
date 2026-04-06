@@ -2,7 +2,7 @@
 import {
   Component, ElementRef, EventEmitter, Input,
   OnDestroy, OnInit, Output, ViewChild,
-  OnChanges, SimpleChanges, ChangeDetectorRef
+  OnChanges, SimpleChanges, ChangeDetectorRef, AfterViewInit
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -169,9 +169,9 @@ interface Judge0Language {
 </div>
   `,
 })
-export class CodeEditorComponent implements OnInit, OnDestroy, OnChanges {
+export class CodeEditorComponent implements OnInit, AfterViewInit, OnDestroy, OnChanges {
 
-  @ViewChild('editorContainer', { static: true })
+  @ViewChild('editorContainer', { static: false })
   editorContainer!: ElementRef;
 
   @Input() initialCode: string = '';
@@ -181,7 +181,7 @@ export class CodeEditorComponent implements OnInit, OnDestroy, OnChanges {
   @Output() submit = new EventEmitter<string>();
   @Output() languageIdChange = new EventEmitter<number>(); // Emit Judge0 language ID
 
-  editor!: monaco.editor.IStandaloneCodeEditor;
+  editor: monaco.editor.IStandaloneCodeEditor | null = null;
   code: string = '';
   selectedLanguageId: number = 62; // Default: Java (Judge0 ID)
   
@@ -332,6 +332,9 @@ echo "Hello, InterviewPro!"`,
   ngOnInit(): void {
     this.loadLanguagesFromJudge0();
     this.code = this.initialCode || this.getTemplateCode(this.selectedLanguageId);
+  }
+
+  ngAfterViewInit(): void {
     this.initEditor();
   }
 
@@ -369,6 +372,11 @@ echo "Hello, InterviewPro!"`,
 
   /** Initialize Monaco editor */
   initEditor(): void {
+    if (!this.editorContainer) {
+      console.error('Editor container not found');
+      return;
+    }
+
     this.editor = monaco.editor.create(this.editorContainer.nativeElement, {
       value: this.code,
       language: this.getMonacoMode(this.getLanguageName(this.selectedLanguageId)),
@@ -385,12 +393,16 @@ echo "Hello, InterviewPro!"`,
 
     // Focus the editor to enable keyboard input
     setTimeout(() => {
-      this.editor.focus();
+      if (this.editor) {
+        this.editor.focus();
+      }
     }, 100);
 
-    this.editor.onDidChangeModelContent(() => {
-      this.code = this.editor.getValue();
-    });
+    if (this.editor) {
+      this.editor.onDidChangeModelContent(() => {
+        this.code = this.editor!.getValue();
+      });
+    }
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -408,7 +420,9 @@ echo "Hello, InterviewPro!"`,
       this.code = this.initialCode;
       // Re-focus editor after model change
       setTimeout(() => {
-        this.editor.focus();
+        if (this.editor) {
+          this.editor.focus();
+        }
       }, 50);
     }
     if (changes['consoleOutput']) {
@@ -431,6 +445,8 @@ echo "Hello, InterviewPro!"`,
   }
 
   onLanguageChange(): void {
+    if (!this.editor) return;
+    
     // Convert to number (dropdown returns string)
     this.selectedLanguageId = Number(this.selectedLanguageId);
     
@@ -446,7 +462,9 @@ echo "Hello, InterviewPro!"`,
     this.languageIdChange.emit(this.selectedLanguageId);
     // Ensure editor has focus after language change
     setTimeout(() => {
-      this.editor.focus();
+      if (this.editor) {
+        this.editor.focus();
+      }
     }, 50);
   }
 
