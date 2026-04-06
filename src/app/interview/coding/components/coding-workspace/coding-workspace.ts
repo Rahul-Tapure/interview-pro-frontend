@@ -266,6 +266,12 @@ export class CodingWorkspaceComponent {
   }
 
   onRun(code: string, question: CodingQuestion) {
+    // Prevent duplicate runs
+    if (this.output === 'Running...') {
+      console.warn('Run already in progress');
+      return;
+    }
+    
     this.codeStore[question.questionId] = code;
     const input = question.testCases?.find((tc: { sample: any }) => tc.sample)?.input || '';
     this.output = 'Running...';
@@ -289,11 +295,20 @@ export class CodingWorkspaceComponent {
         console.error('Run error:', err);
         this.output = 'Execution error: ' + (err.error?.message || 'Backend connection failed');
         this.cdr.detectChanges();
+      },
+      complete: () => {
+        // Reset state on completion
       }
     });
   }
 
   onSubmit(code: string, question: CodingQuestion) {
+    // Prevent duplicate submits
+    if (this.output === 'Submitting...') {
+      console.warn('Submit already in progress');
+      return;
+    }
+    
     this.codeStore[question.questionId] = code;
     this.output = 'Submitting...';
     

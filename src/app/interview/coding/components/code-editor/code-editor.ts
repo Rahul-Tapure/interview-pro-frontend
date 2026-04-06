@@ -42,18 +42,18 @@ interface Judge0Language {
     </div>
 
     <div class="toolbar-actions">
-      <button class="btn-run" (click)="runCode()">
+      <button class="btn-run" (click)="runCode()" [disabled]="isRunning">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <polygon points="5 3 19 12 5 21 5 3"/>
         </svg>
-        Run
+        {{ isRunning ? 'Running...' : 'Run' }}
       </button>
 
-      <button class="btn-submit" (click)="submitCode()">
+      <button class="btn-submit" (click)="submitCode()" [disabled]="isSubmitting">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
           <path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/>
         </svg>
-        Submit
+        {{ isSubmitting ? 'Submitting...' : 'Submit' }}
       </button>
     </div>
 
@@ -187,6 +187,10 @@ export class CodeEditorComponent implements OnInit, AfterViewInit, OnDestroy, On
   
   languages: Judge0Language[] = [];
   loadingLanguages = true;
+  
+  // ✅ Prevent duplicate requests
+  isRunning = false;
+  isSubmitting = false;
 
   /** 
    * Template map: Judge0 ID → starter code
@@ -448,13 +452,33 @@ echo "Hello, InterviewPro!"`,
   }
 
   runCode(): void {
+    // Prevent duplicate executions
+    if (this.isRunning) {
+      console.warn('Run already in progress');
+      return;
+    }
+    this.isRunning = true;
     this.run.emit(this.code);
-    this.languageIdChange.emit(this.selectedLanguageId);
+    
+    // Reset flag after a short delay to allow for response
+    setTimeout(() => {
+      this.isRunning = false;
+    }, 1000);
   }
 
   submitCode(): void {
+    // Prevent duplicate executions
+    if (this.isSubmitting) {
+      console.warn('Submit already in progress');
+      return;
+    }
+    this.isSubmitting = true;
     this.submit.emit(this.code);
-    this.languageIdChange.emit(this.selectedLanguageId);
+    
+    // Reset flag after a short delay to allow for response
+    setTimeout(() => {
+      this.isSubmitting = false;
+    }, 1000);
   }
 
   clearConsole(): void {

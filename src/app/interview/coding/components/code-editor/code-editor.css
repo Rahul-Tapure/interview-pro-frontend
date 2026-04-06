@@ -103,6 +103,14 @@
   box-shadow: 0 2px 12px rgba(14,99,156,.25);
 }
 
+/* Button Disabled States */
+.btn-run:disabled,
+.btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 /* ─── Editor Container ─────────────────────────── */
 .editor-container {
   flex: 1;
