@@ -331,11 +331,19 @@ echo "Hello, InterviewPro!"`,
 
   ngOnInit(): void {
     this.loadLanguagesFromJudge0();
-    this.code = this.initialCode || this.getTemplateCode(this.selectedLanguageId);
+    // Initialize code with initialCode if provided, otherwise use template
+    if (this.initialCode && this.initialCode.trim()) {
+      this.code = this.initialCode;
+    } else {
+      this.code = this.getTemplateCode(this.selectedLanguageId);
+    }
   }
 
   ngAfterViewInit(): void {
-    this.initEditor();
+    // Small delay to ensure DOM is fully ready
+    setTimeout(() => {
+      this.initEditor();
+    }, 10);
   }
 
   /** Load languages from backend (which fetches from Judge0) */
@@ -377,53 +385,62 @@ echo "Hello, InterviewPro!"`,
       return;
     }
 
-    this.editor = monaco.editor.create(this.editorContainer.nativeElement, {
-      value: this.code,
-      language: this.getMonacoMode(this.getLanguageName(this.selectedLanguageId)),
-      theme: 'vs-dark',
-      automaticLayout: true,
-      fontSize: 14,
-      minimap: { enabled: false },
-      scrollBeyondLastLine: false,
-      lineNumbers: 'on',
-      renderLineHighlight: 'all',
-      cursorBlinking: 'smooth',
-      smoothScrolling: true,
-    });
-
-    // Focus the editor to enable keyboard input
-    setTimeout(() => {
-      if (this.editor) {
-        this.editor.focus();
-      }
-    }, 100);
-
-    if (this.editor) {
-      this.editor.onDidChangeModelContent(() => {
-        this.code = this.editor!.getValue();
+    try {
+      this.editor = monaco.editor.create(this.editorContainer.nativeElement, {
+        value: this.code || this.getTemplateCode(this.selectedLanguageId),
+        language: this.getMonacoMode(this.getLanguageName(this.selectedLanguageId)),
+        theme: 'vs-dark',
+        automaticLayout: true,
+        fontSize: 14,
+        minimap: { enabled: false },
+        scrollBeyondLastLine: false,
+        lineNumbers: 'on',
+        renderLineHighlight: 'all',
+        cursorBlinking: 'smooth',
+        smoothScrolling: true,
       });
-    }
-  }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['initialCode'] && this.editor) {
-      const langName = this.getLanguageName(this.selectedLanguageId);
-      const currentModel = this.editor.getModel();
-      if (currentModel) {
-        currentModel.dispose();
-      }
-      const model = monaco.editor.createModel(
-        this.initialCode, 
-        this.getMonacoMode(langName)
-      );
-      this.editor.setModel(model);
-      this.code = this.initialCode;
-      // Re-focus editor after model change
+      console.log('Monaco editor initialized with code:', this.code.substring(0, 50) + '...');
+
+      // Focus the editor to enable keyboard input
       setTimeout(() => {
         if (this.editor) {
           this.editor.focus();
         }
-      }, 50);
+      }, 100);
+
+      if (this.editor) {
+        this.editor.onDidChangeModelContent(() => {
+          this.code = this.editor!.getValue();
+        });
+      }
+    } catch (error) {
+      console.error('Error creating Monaco editor:', error);
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['initialCode'] && changes['initialCode'].currentValue) {
+      this.code = changes['initialCode'].currentValue;
+      
+      if (this.editor) {
+        const langName = this.getLanguageName(this.selectedLanguageId);
+        const currentModel = this.editor.getModel();
+        if (currentModel) {
+          currentModel.dispose();
+        }
+        const model = monaco.editor.createModel(
+          this.code, 
+          this.getMonacoMode(langName)
+        );
+        this.editor.setModel(model);
+        // Re-focus editor after model change
+        setTimeout(() => {
+          if (this.editor) {
+            this.editor.focus();
+          }
+        }, 50);
+      }
     }
     if (changes['consoleOutput']) {
       this.cdr.detectChanges();
