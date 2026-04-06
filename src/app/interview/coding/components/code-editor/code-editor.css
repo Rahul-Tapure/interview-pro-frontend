@@ -112,7 +112,7 @@
 
 /* ─── Console Panel ────────────────────────────── */
 .console-panel {
-  height: 120px;
+  height: 200px;
   background: #0e0e0e;
   border-top: 1px solid #333;
   display: flex;

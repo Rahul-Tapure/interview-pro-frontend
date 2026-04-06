@@ -269,9 +269,13 @@ export class CodingWorkspaceComponent {
     this.codeStore[question.questionId] = code;
     const input = question.testCases?.find((tc: { sample: any }) => tc.sample)?.input || '';
     this.output = 'Running...';
-    const url = environment.production
-      ? `${environment.apiUrl}/interviewpro/coding/run`
-      : '/interviewpro/coding/run';
+    
+    // Ensure we use the full backend URL, not relative path
+    const baseUrl = 'https://interview-pro-backend-60ow.onrender.com';
+    const url = `${baseUrl}/interviewpro/coding/run`;
+    
+    console.log('Running code against:', url);
+    
     this.http.post<any>(url, {
       sourceCode: code, 
       languageId: this.currentLanguageId,
@@ -281,11 +285,9 @@ export class CodingWorkspaceComponent {
         this.output = JSON.stringify(res, null, 2);
         this.cdr.detectChanges();
       },
-      error: ()  => { 
-        this.output = JSON.stringify({
-          status: { id: 0, description: 'Backend Error' },
-          message: 'Failed to connect to execution server'
-        }, null, 2);
+      error: (err) => { 
+        console.error('Run error:', err);
+        this.output = 'Execution error: ' + (err.error?.message || 'Backend connection failed');
         this.cdr.detectChanges();
       }
     });
@@ -294,9 +296,13 @@ export class CodingWorkspaceComponent {
   onSubmit(code: string, question: CodingQuestion) {
     this.codeStore[question.questionId] = code;
     this.output = 'Submitting...';
-    const url = environment.production
-      ? `${environment.apiUrl}/interviewpro/coding/submit`
-      : '/interviewpro/coding/submit';
+    
+    // Ensure we use the full backend URL, not relative path
+    const baseUrl = 'https://interview-pro-backend-60ow.onrender.com';
+    const url = `${baseUrl}/interviewpro/coding/submit`;
+    
+    console.log('Submitting to:', url);
+    
     this.http.post<any>(url, {
       questionId: question.questionId, 
       sourceCode: code, 
@@ -306,8 +312,7 @@ export class CodingWorkspaceComponent {
       withCredentials: true
     }).subscribe({
       next: res  => { 
-        this.output = JSON.stringify(res, null, 2);
-
+        // Store result but don't display it
         this.questionResults.push({
           title: question.title,
           status: res.status || 'SUBMITTED',
@@ -315,29 +320,26 @@ export class CodingWorkspaceComponent {
           total: res.total || 0
         });
 
+        console.log('Submit response:', res);
+        
+        // Auto-navigate to next question without showing response
         if (this.currentIndex < this.questionsCache.length - 1) {
-          setTimeout(() => {
-            this.currentIndex++;
-            this.output = '';
-            this.cdr.detectChanges();
-          }, 1500);
+          this.currentIndex++;
+          this.output = '';
+          this.cdr.detectChanges();
         } else {
+          // Last question - show results
           setTimeout(() => {
             this.completed = true;
             this.cdr.detectChanges();
-          }, 1500);
+          }, 500);
         }
-
-        this.cdr.detectChanges();
       },
       error: (err)  => { 
         console.error('Submit error:', err);
-        this.output = JSON.stringify({
-          status: { id: 0, description: 'Submit Failed' },
-          message: err.status === 401 
-            ? 'Authentication required. Please log in.' 
-            : err.error?.message || 'Failed to submit to server'
-        }, null, 2);
+        this.output = 'Submission failed. ' + (err.status === 401 
+          ? 'Authentication required. Please log in.' 
+          : err.error?.message || 'Failed to submit to server');
         this.cdr.detectChanges();
       }
     });
