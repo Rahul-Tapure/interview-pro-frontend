@@ -31,6 +31,7 @@ export class AppComponent implements OnInit {
     private authService: AuthService,
     private router: Router
   ) {
+    // Generate avatar once per session
     this.randomAvatarUrl = this.generateRandomAvatar();
   }
 ngOnInit(): void {
@@ -79,8 +80,10 @@ generateRandomAvatar(): string {
 }
 
 onImageError(event: any): void {
-  // On image load error, set fallback random avatar
-  event.target.src = this.generateRandomAvatar();
+  // On image load error, use the pre-generated random avatar
+  if (event.target.src !== this.randomAvatarUrl) {
+    event.target.src = this.randomAvatarUrl;
+  }
 }
 
 }
